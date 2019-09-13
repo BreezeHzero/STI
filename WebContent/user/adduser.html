@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>用户信息录入</title>
+	<link rel="stylesheet" href="../layui/css/layui.css" media="all" />
+</head>
+<body>
+<div style="width:50%">
+	<form class="layui-form" action="" id="the_form">
+		<div class="layui-form-item" style="display:none;">
+		    <label class="layui-form-label"></label>
+		    <div class="layui-input-block">
+		      <input type="hidden" name="userid" id="userid" lay-verify="userid" autocomplete="off"  class="layui-input">
+		    </div>
+	  	</div>
+	  	
+		      <div style="padding-top:15px;"></div>
+	  	<div class="layui-form-item" >
+		    <label class="layui-form-label">用户名</label>
+		    <div class="layui-input-block">
+		      <input type="text" name="username" id="username" lay-verify="username" autocomplete="off" placeholder="请输入用户名" class="layui-input">
+		      <i id="icon_close" style="color:#D3D3D3;font-size: 18px;position: absolute;top: 9px; right: 6px;cursor: pointer;" class="layui-icon layui-icon-close"></i>
+		    </div>
+	  	</div>
+	  	
+	  	<div class="layui-form-item">
+		    <label class="layui-form-label">姓名</label>
+		    <div class="layui-input-block">
+		      <input type="text" name="realname" id="realname" lay-verify="realname" autocomplete="off" placeholder="请输入真实姓名" class="layui-input">
+		      <i id="icon_close" style="color:#D3D3D3;font-size: 18px;position: absolute;top: 9px; right: 6px;cursor: pointer;" class="layui-icon layui-icon-close"></i>
+		    </div>
+	  	</div>
+		
+		<div class="layui-form-item">
+		    <label class="layui-form-label">密码</label>
+		    <div class="layui-input-block">
+		      <input type="password" name="userpsw" id="userpsw" lay-verify="userpsw"  placeholder="请输入密码" autocomplete="off" class="layui-input">
+		    </div>
+  		</div>
+  		
+  		<div class="layui-form-item">
+		    <label class="layui-form-label">角色</label>
+		    <div class="layui-input-block">
+		      <input type="radio" name="userrole" value="管理员" title="管理员" checked="">
+		      <input type="radio" name="userrole" value="普通用户" title="普通用户">
+		    </div>
+  		</div>
+  		
+  		 <div class="layui-form-item">
+		    <div class="layui-input-block">
+		      <button class="layui-btn" lay-submit="" lay-filter="demo1">创建用户信息</button>
+		      <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+		    </div>
+ 		 </div>
+	</form>
+</div>	
+	
+<script type="text/javascript" src="../layui/layui.js"></script>
+<script>
+layui.use(['form'],function(){
+	var form = layui.form;
+	var $ = layui.$;
+	
+  //自定义验证规则
+  form.verify({
+	username: function(value){
+      if(value.length == 0){
+        return '用户名不能为空';
+      }
+    },
+    realname: function(value){
+        if(value.length == 0){
+          return '姓名不能为空';
+        }
+    },
+    userpsw: function(value){
+        if(value.length == 0){
+          return '请输入密码';
+        }
+    },userpsw: [
+        /^[\S]{6,12}$/
+        ,'密码必须6到12位，且不能出现空格'
+      ]
+  });
+  //监听提交
+  //此data是表单数据
+  form.on('submit(demo1)', function(data){
+	  var role = $("input[type=radio]:checked").val();
+		//询问框
+	  layer.confirm('确认创建该用户为' + '"' + role + '"' + '?', {
+	    btn: ['确定','取消'] //按钮
+	  }, function(){
+		  $.getJSON("../AddUserService",{
+				 'userid':$("#userid").val(),
+				 'username':$("#username").val(),
+				 'realname':$("#realname").val(),
+				 'userpsw':$("#userpsw").val(),
+				 'userrole':role
+			 },function(data){
+				 if(data>0){
+					 layer.msg('添加成功', {icon: 1});
+					 $("#the_form")[0].reset();
+				 }else{
+					 layer.msg('添加失败', {
+					      time: 3000 //3s后自动关闭
+					    });
+				 }
+			 });
+	  }, function(){
+	    layer.msg('信息未添加', {
+	      time: 3000, //3s后自动关闭
+	    });
+	  });
+
+    return false;
+  });
+  //清空单个表单
+  $(document).on('click','#icon_close',function(){
+	  document.getElementById("username").value="";
+  });
+  $(document).on('click','#icon_close',function(){
+	  document.getElementById("realname").value="";
+  });
+	
+/* layui.use结尾 */	
+});
+</script>	
+	
+</body>
+</html>

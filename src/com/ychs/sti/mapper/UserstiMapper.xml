@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace = "com.ychs.sti.mapper.UserstiMapper">
+
+	<insert id="insertUser" parameterType="com.ychs.sti.model.Usersti">
+		INSERT INTO usersti VALUES(0,#{username},#{realname},#{userpsw},#{userrole});
+	</insert>
+	
+	<select id="selectUserByLike" resultType="com.ychs.sti.model.Usersti">
+		SELECT userid,username,realname,userrole
+		FROM usersti
+		WHERE 1=1
+		<if test="username2 != null and username2 !=''"> AND username LIKE '%${username2}%'</if>
+		<if test="realname != null and realname !=''"> AND realname LIKE '%${realname}%'</if>
+		<if test="userrole != null and userrole !=''"> AND userrole = #{userrole}</if>
+	</select>
+	
+<!-- 	修改用户角色-->
+	<update id="updateUserRole">
+		UPDATE usersti SET
+		userrole = #{userrole}
+		WHERE userid=#{userid}
+	</update>
+<!-- 	修改密码-->
+	<update id="updateUserpsw">
+		UPDATE usersti SET
+		userpsw = 123456
+		WHERE userid=#{userid}
+	</update>
+<!-- 	删除用户 -->
+	<!-- 删除 -->
+	<delete id="deleteUser">
+		DELETE FROM usersti WHERE userid=#{userid}
+	</delete>
+<!-- 	个人信息维护 -->
+	<update id="updateUserinfo" parameterType="com.ychs.sti.model.Usersti">
+		UPDATE usersti SET
+		username = #{username},
+		realname = #{realname},
+		userpsw = #{userpsw}
+		WHERE userid=#{userid}
+	</update>
+	<!-- 登录验证 -->
+	<select id="checkedLogin"  resultType="com.ychs.sti.model.Usersti">
+		SELECT * FROM usersti WHERE username = #{username} AND userpsw = #{userpsw}
+	</select>
+</mapper>

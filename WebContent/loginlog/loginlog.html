@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<!-- 指定字符集 -->
+	    <meta charset="utf-8">
+	    <!-- 使用Edge最新的浏览器的渲染方式 -->
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	    <!-- viewport视口：网页可以根据设置的宽度自动进行适配，在浏览器的内部虚拟一个容器，容器的宽度与设备的宽度相同。
+	    width: 默认宽度与设备的宽度相同
+	    initial-scale: 初始的缩放比，为1:1 -->
+	    <meta name="viewport" content="width=device-width, initial-scale=1">
+	    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+	    <META HTTP-EQUIV="pragma" CONTENT="no-cache"> 
+		<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate"> 
+		<META HTTP-EQUIV="expires" CONTENT="0">
+		<title>显示登录日志</title>
+		
+		<link rel="stylesheet" href="../layui/css/layui.css" media="all" />
+</head>
+<body>
+
+<table id="test" class="layui-hide" lay-filter="demo"></table>
+
+<script type="text/javascript" src="../layui/layui.js"></script> 
+<script>
+layui.use(['table','layer'], function(){
+  var table = layui.table;
+  var $=layui.$;
+  var layer=layui.layer;
+	
+  $(document).ready(function(){
+	  $.getJSON("../GetUsersinfoSessionServlet",{},function(data){
+		  console.log(data);
+		  table.render({
+			  parseData:function(data){
+			  		 return {
+						  'code':0 ,// 对应 code
+						  'msg' :"", // 对应 msg
+						  'count' :data, // 对应 count
+						  'data':data  // 对应 data
+						 }
+			  	}
+		  		,where:{
+		  			'realname':data.realname
+		  		}
+		  		,method:"get"
+			    ,elem: '#test'
+			    ,url: '../FinLoginlogServlet' //数据接口 
+			    ,cols: [[ //表头
+			    	{type:'numbers',title:'序号'}
+			      ,{field: 'realname', title: '登录人'}
+			      ,{field: 'logintime', title: '登录时间'}
+			      ,{field: 'loginip', title: '登录ip'}
+			    ]]
+			  });
+	  });
+  });
+
+/*  layui.use终点 */ 
+});
+</script>
+</body>
+</html>

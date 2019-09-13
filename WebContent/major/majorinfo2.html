@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<!-- 指定字符集 -->
+	    <meta charset="utf-8">
+	    <!-- 使用Edge最新的浏览器的渲染方式 -->
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	    <!-- viewport视口：网页可以根据设置的宽度自动进行适配，在浏览器的内部虚拟一个容器，容器的宽度与设备的宽度相同。
+	    width: 默认宽度与设备的宽度相同
+	    initial-scale: 初始的缩放比，为1:1 -->
+	    <meta name="viewport" content="width=device-width, initial-scale=1">
+	    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+	    <META HTTP-EQUIV="pragma" CONTENT="no-cache"> 
+		<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate"> 
+		<META HTTP-EQUIV="expires" CONTENT="0">
+		<title>显示专业</title>
+		
+		<link rel="stylesheet" href="../layui/css/layui.css" media="all" />
+</head>
+<body>
+<!-- <table class="layui-hide" id="test"></table> -->
+
+	<div style="padding: 5px;"></div>
+	<div class="layui-inline" style="width:500;height:25;padding-left:10px;">
+	    <div class="layui-inline">
+	    	<input id="search_input" class="layui-input" name="name"  placeholder="按专业搜索"  autocomplete="off" style="height:25;width:250" type='text' value=""/>
+	    	<i id="icon_close" style="color:#D3D3D3;font-size: 18px;position: absolute;top: 9px; right: 6px;cursor: pointer;" class="layui-icon layui-icon-close"></i>
+	    </div>
+	    <button id="search_btn" class="layui-btn" lay-submit=""  data-type="reload" lay-event="search">搜索</button>
+	    <button id="add" class="layui-btn" lay-submit=""  lay-event="newadd">新增</button>
+    </div>
+
+
+
+<table id="test" class="layui-table" lay-data="{url:'../FindMajorByLikeServlet', id:'idTest'}" lay-filter="demo">
+  <thead>
+    <tr>
+      	<th lay-data="{field:'majorid',width:250}">专业编号</th>
+		<th lay-data="{field:'departmentname',width:450}">院系名称</th>
+		<th lay-data="{field:'majorname'}">专业名称</th>
+		<th lay-data="{fixed: 'right', width:178, align:'center', toolbar: '#barDemo'}"></th>
+    </tr>
+  </thead>
+</table>
+ 
+<!-- 添加表单 -->
+ <div class="site-text" style="margin: 5%; display: none" id="window2"  target="test123">	
+	<form class="layui-form" id="major_form2" method="post" lay-filter="example">
+	 
+	 <div class="layui-form-item">
+    	<label class="layui-form-label">院系名称</label>
+   	 	<div class="layui-input-block">
+	      <select name="interest" lay-filter="aihao" disabled="disabled">
+	        <option value="05" id="departmentid2">计算机工程系</option>
+	      </select>
+    	</div>
+ 	 </div>
+      
+	  <div class="layui-form-item">
+	    <label class="layui-form-label">新专业名称</label>
+	    <div class="layui-input-block">
+	      <input type="text" id="majorname2" name="majorname"  lay-verify="title" autocomplete="off" placeholder="请输入名称" class="layui-input">
+	    </div>
+	  </div>
+	  
+	</form>
+</div>
+<!--  修改表单 -->
+
+<div class="site-text" style="margin: 5%; display: none" id="window"  target="test123">	
+	<form class="layui-form" id="major_form" method="post" lay-filter="example">
+	
+	  <div class="layui-form-item">
+	    <label class="layui-form-label">专业名称</label>
+	    <div class="layui-input-block">
+	      <input type="text" id="majorname" name="majorname" lay-verify="title" autocomplete="off" placeholder="请输入名称" class="layui-input">
+	    </div>
+	  </div>
+	  
+	</form>
+</div>
+ 
+ 
+ 
+ 
+ 
+<script type="text/html" id="barDemo">
+ 	 <a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看 </a>
+	<a class="layui-btn layui-btn-xs" lay-event="edit">编辑 </a>
+</script>
+
+<script type="text/javascript" src="../layui/layui.js"></script> 
+
+<script>
+layui.use(['table','layer','form'], function(){
+  var table = layui.table;
+  var $=layui.$;
+  var layer=layui.layer;
+  var form=layui.form;
+  //监听工具条
+  table.on('tool(demo)', function(obj){
+    var data = obj.data;
+    if(obj.event === 'detail'){
+      layer.msg('系部：计算机工程系'+'</br> 专业编号：'+ data.majorid + '</br> 专业名称：'+ data.majorname,{icon:7,time:5000});
+    } else if(obj.event === 'edit'){
+    		layer.open({
+    			type:1,
+    			title:"编辑",
+    			area:['50%','50%'],
+    			skin: 'layui-layer-molv',
+    			  btn: ['确定', '取消'], 
+    			  shadeClose: true,
+    			  shade: 0 ,//遮罩透明度
+    			  content: $("#window"),
+    			  success:function(layero,index){
+ 	                 $('#majorname').val(data.majorname);  
+ 	                 layero.addClass('layui-form');
+	 	 			 layero.find('.layui-layer-btn0').attr('lay-filter','example').attr('lay-submit','');
+	 	 			 form.render();
+                  },
+    			  yes:function(index,layero){    				  
+    				  form.on('submit(example)', function(data){
+    						//询问框
+    					  layer.confirm('确认提交？', {
+    					    btn: ['确定','取消'] //按钮
+    					  }, function(){
+    						  var param = {    						  
+    	    						  "majorid":data.majorid,
+    	    						  "majorname":$("#majorname").val()
+    	    				  }
+    						  $.getJSON("../UpdateMajorServlet",param,function(data){
+    								 if(data>0){
+    									 layer.msg('修改成功', {icon: 1});
+    									 $("#major_form")[0].reset();//重置表单
+    									 table.reload('idTest',{})//刷新表格
+    								 }
+    							 });
+    					  }, function(){
+    					    layer.msg('已取消操作', {
+    					      time: 2000 //3s后自动关闭
+    					    });
+    					  });
+    				    return false;
+    				  });
+    			  }
+    		});
+    } 
+    /* 监听结尾 */
+  });
+  
+  $('.demoTable .layui-btn').on('click', function(){
+    var type = $(this).data('type');
+    active[type] ? active[type].call(this) : '';
+  });
+  
+  /* 搜索按钮 */
+ var active={
+  		reload:function(){
+  		var name = document.getElementById("search_input").value;
+  		if(name != null){    
+  			table.reload('idTest',{ 			                                         
+  			              where: { 'name': $.trim(name)}//这里传参  向后台
+  			              , url: '../FindMajorByLikeServlet'//后台做模糊搜索接口路径
+  			              , method: 'get'
+  			              });
+  		                 }
+  		    }  
+    };
+  
+  $('#search_btn').on('click', function(){
+	                  var type = 'reload';
+	                  active[type] ? active[type].call(this) : '';
+	
+	                });  
+  //监听回车
+  $("#search_input").bind("keyup", function (e) {
+      if (e.keyCode == 13) {
+          var type = "reload";
+          active[type] ? active[type].call(this) : '';
+      }
+  });
+  //清空单个表单
+  $(document).on('click','#icon_close',function(){
+	  document.getElementById("search_input").value="";
+  });
+  
+  //表单验证
+  form.verify({
+	    title: function(value){
+	      if(value.length == 0){
+	        return '专业名称不能为空';
+	      }
+	    }
+	  });
+  
+  /* 添加按钮 */
+  $("#add").click(function(){
+	  layer.open({
+		  type:1,
+		  title:"新增",
+		  skin: 'layui-layer-molv',
+		  area:['50%','50%'],
+		  btn:['确定','取消'],
+		  content:$("#window2"),
+		  success:function(layero,index){
+			  layero.addClass('layui-form');
+			  layero.find('.layui-layer-btn0').attr('lay-filter','example').attr('lay-submit','');
+			  form.render();
+		  },
+		  yes:function(index,layero){
+			  form.on('submit(example)', function(data){
+				 	//询问框
+				  layer.confirm('确认提交？', {
+				    btn: ['确定','取消'] //按钮
+				  }, function(){
+					  var param = {
+							  'departmentid':$("#departmentid2").val(),
+							  'majorname':$("#majorname2").val()
+					  }
+					  $.getJSON("../AddMajorServlet",param,function(data){
+							 if(data>0){
+								 layer.msg('添加成功', {icon: 1});
+								 $("#major_form2")[0].reset();//重置表单
+								 table.reload('idTest',{})//刷新表格
+							 }
+						 });
+				  }, function(){
+				    layer.msg('已取消操作', {
+				      time: 2000 //3s后自动关闭
+				    });
+				  });
+				  
+			    return false;
+			  });
+		  }
+	  });
+  });
+
+/*  layui.use终点 */ 
+});
+</script>
+</body>
+</html>

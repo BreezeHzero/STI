@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ychs.sti.mapper.CompetitionMapper">
+	<insert id="insertCompetition" parameterType="com.ychs.sti.model.Competition">
+		INSERT INTO competition VALUES(0,#{competitionname},DATE_FORMAT(#{competitiondate},'%y-%m-%d'),#{levels},#{competitiontype},#{competitiondesc})
+	</insert>
+	
+<!-- 	分页查询出所有数据 -->
+	<select id="selectCompetitionByPage" resultType="com.ychs.sti.model.Competition">
+		SELECT * 
+		FROM competition
+		WHERE 1=1
+		<if test="comname != null and comname != '' ">AND competitionname LIKE '%${comname}%'</if>
+		<!-- 开始时间startdate enddate结束时间 --> 
+		<if test="startdate != null and startdate != ''">AND competitiondate &gt;= DATE_FORMAT(#{startdate},'%y-%m-%d')</if>
+		<if test="enddate != null and enddate != ''">AND competitiondate &lt;= DATE_FORMAT(#{enddate},'%y-%m-%d')</if>
+		<if test="levels != null and levels != '' ">AND levels = #{levels}</if>
+		<if test="comtype != null and comtype != '' ">AND competitiontype = #{comtype}</if>
+		LIMIT #{start},#{rows}
+	</select>
+<!-- 	查询出页面条数 -->
+	<select id="selectTotalCount" resultType="int">
+		SELECT COUNT(*) 
+		FROM competition
+		WHERE 1=1
+		<if test="comname != null and comname != '' ">AND competitionname LIKE '%${comname}%'</if>
+		<!-- 开始时间startdate enddate结束时间 --> 
+		<if test="startdate != null and startdate != ''">AND competitiondate &gt;= DATE_FORMAT(#{startdate},'%y-%m-%d')</if>
+		<if test="enddate != null and enddate != ''">AND competitiondate &lt;= DATE_FORMAT(#{enddate},'%y-%m-%d')</if>
+		<if test="levels != null and levels != '' ">AND levels = #{levels}</if>
+		<if test="comtype != null and comtype != '' ">AND competitiontype = #{comtype}</if>
+	</select>
+	
+	<update id="updateCompetition">
+		UPDATE competition
+		SET competitionname = #{competitionname},competitiondate = #{competitiondate},levels=#{levels},competitiontype=#{competitiontype},competitiondesc = #{competitiondesc}
+		WHERE competitionid = #{competitionid} 	
+	</update>
+	<delete id="deleteCompetition">
+		DELETE FROM competition WHERE competitionid = #{competitionid}	
+	</delete>
+	
+	<select id="selectCompetition" resultType="com.ychs.sti.model.Competition">
+		SELECT * FROM competition
+	</select>
+	<!-- 比赛分级统计 -->
+	<select id="countCompetition" resultType="com.ychs.sti.model.Competition">
+		SELECT levels,COUNT(*) number
+		FROM competition
+		GROUP BY levels
+	</select>
+	<!-- 按级别统计人数 -->
+	<select id="countWinnerBylevels"  resultType="com.ychs.sti.model.Competition">
+		SELECT levels,COUNT(*) number
+		FROM team
+		INNER JOIN
+		competition
+		ON team.`competitionid`=competition.`competitionid`
+		GROUP BY levels
+	</select>
+	<!-- 柱状图-统计各专业参与各级别奖项的队伍 -->
+	<!-- <select id="countWinerMajorname" resultType="com.ychs.sti.model.Competition">
+		SELECT levels,majorname,COUNT(*) number
+		FROM team
+		INNER JOIN
+		competition
+		ON team.`competitionid`=competition.`competitionid`
+		INNER JOIN 
+		record
+		ON record.`teamid`=team.`teamid`
+		GROUP BY levels,majorname
+	</select> -->
+	<select id="countWinerMajorname" resultType="com.ychs.sti.model.Competition">
+		SELECT major.majorname,IFNULL(nguo,0) nguo,IFNULL(sheng,0) sheng,IFNULL(shi,0) shi,IFNULL(xiao,0) xiao,IFNULL(yuan,0) yuan
+		FROM major
+		LEFT JOIN
+		(SELECT majorname, COUNT(CASE WHEN levels='国家级' THEN 1 END) AS nguo,
+		COUNT(CASE WHEN levels='省级' THEN 1 END) AS sheng,
+		COUNT(CASE WHEN levels='市级' THEN 1 END) AS shi,
+		COUNT(CASE WHEN levels='校级' THEN 1 END) AS xiao,
+		COUNT(CASE WHEN levels='院级' THEN 1 END) AS yuan
+		FROM team
+		LEFT JOIN
+		competition
+		ON team.`competitionid`=competition.`competitionid`
+		LEFT JOIN 
+		record
+		ON record.`teamid`=team.`teamid`
+		WHERE 1=1
+		<if test="competitionid != null and competitionid != ''">AND record.competitionid = #{competitionid}</if>
+		<if test="grade != null and grade != ''">AND grade = #{grade}</if>
+		GROUP BY majorname) M
+		ON major.`majorname`= M.majorname
+		<!-- SELECT majorname, COUNT(CASE WHEN levels='国家级' THEN 1 END) AS nguo,
+		COUNT(CASE WHEN levels='省级' THEN 1 END) AS sheng,
+		COUNT(CASE WHEN levels='市级' THEN 1 END) AS shi,
+		COUNT(CASE WHEN levels='校级' THEN 1 END) AS xiao,
+		COUNT(CASE WHEN levels='院级' THEN 1 END) AS yuan
+		FROM team
+		LEFT JOIN
+		competition
+		ON team.`competitionid`=competition.`competitionid`
+		LEFT JOIN 
+		record
+		ON record.`teamid`=team.`teamid`
+		WHERE 1=1
+		<if test="grade != null and grade != ''">AND grade = #{grade}</if>
+		GROUP BY majorname -->
+	</select>
+</mapper>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ychs.sti.mapper.RecordMapper">
+	<insert id="insertRecord" parameterType="com.ychs.sti.model.Record">
+		INSERT INTO record VALUES(0,#{competitionid},#{ranks},#{teamid},#{teamname})
+	</insert>
+	
+	<!-- 显示表信息 -->
+	<select id="selectRecordByPage" resultType="com.ychs.sti.model.Record">
+		SELECT *
+		FROM record
+		INNER JOIN competition
+		ON record.`competitionid` = competition.`competitionid`
+		INNER JOIN team
+		ON team.`teamid` = record.`teamid`
+		WHERE 1=1
+		<if test="competitionid != null and competitionid != ''">AND competition.competitionid = #{competitionid}</if>
+		<if test="levels != null and levels != ''">AND levels = #{levels}</if>
+		<if test="grade != null and grade != ''">AND grade = #{grade}</if>
+		<if test="majorname != null and majorname != ''">AND majorname = #{majorname}</if>
+		<if test="classname != null and classname != ''">AND classname = #{classname}</if>
+		<if test="studentid != null and studentid != ''">AND studentid = #{studentid}</if>
+		<if test="studentname != null and studentname != ''">AND studentname LIKE '%${studentname}%'</if>
+		<if test="competitiontype != null and competitiontype != ''">AND competitiontype = #{competitiontype}</if>
+		<if test="ranks != null and ranks != ''">AND ranks = #{ranks}</if>
+		<if test="teachername != null and teachername != ''">AND teachername = #{teachername} ORDER BY competitiondate DESC</if>
+		LIMIT #{start},#{rows}
+	</select>
+	
+	<!-- 查询记录总条数 -->
+	<select id="selectTotalCount" resultType="int">
+		SELECT COUNT(*)
+		FROM record
+		INNER JOIN competition
+		ON record.`competitionid` = competition.`competitionid`
+		INNER JOIN team
+		ON team.`teamid` = record.`teamid`
+		WHERE 1=1
+		<if test="competitionid != null and competitionid != ''">AND competitionid = #{competitionid}</if>
+		<if test="levels != null and levels != ''">AND levels = #{levels}</if>
+		<if test="majorname != null and majorname != ''">AND majorname = #{majorname}</if>
+		<if test="classname != null and classname != ''">AND classname = #{classname}</if>
+		<if test="studentid != null and studentid != ''">AND studentid = #{studentid}</if>
+		<if test="studentname != null and studentname != ''">AND studentname LIKE '%${studentname}%'</if>
+		<if test="competitiontype != null and competitiontype != ''">AND competitiontype = #{competitiontype}</if>
+		<if test="ranks != null and ranks != ''">AND ranks = #{ranks}</if>
+		<if test="teachername != null and teachername != ''">AND teachername = #{teachername} ORDER BY competitiondate DESC</if>
+	</select>
+	
+	<update id="updateRecord">
+		UPDATE record SET competitionid = #{competitionid},ranks=#{ranks},teamid=#{teamid},teamname=#{teamname}
+		WHERE recordid=#{recordid}
+	</update>
+	
+	<delete id="deleteRecord">
+		DELETE FROM record WHERE recordid = #{recordid}
+	</delete>
+	<!-- 获奖类型人数统 -->
+	<select id="ranksNumber" resultType="com.ychs.sti.model.Record">
+		SELECT ranks,COUNT(*) number
+		FROM team
+		INNER JOIN
+		record
+		ON record.`teamid` = team.`teamid`
+		WHERE 1=1
+		<if test="competitionid != null and competitionid != ''">AND team.competitionid = #{competitionid}</if>
+		<if test="grade != null and grade != ''">AND grade = #{grade}</if>
+		<if test="studentid != null and studentid != ''">AND studentid = #{studentid}</if>
+		<if test="majorname != null and majorname != ''">AND majorname LIKE '%${majorname}%'</if>
+		<if test="classname != null and classname != ''">AND classname LIKE '%${classname}%'</if>
+		GROUP BY ranks
+	</select>
+	
+	<select id="selectAllRecord" resultType="com.ychs.sti.model.Record">
+		SELECT competitionname,levels,grade,majorname,classname,studentid,studentname,competitiontype,ranks,record.teamname,mobile,email
+		FROM record
+		INNER JOIN competition
+		ON record.`competitionid` = competition.`competitionid`
+		INNER JOIN team
+		ON team.`teamid` = record.`teamid`
+		WHERE 1=1
+		<if test="competitionid != null and competitionid != ''">AND competition.competitionid = #{competitionid}</if>
+		<if test="levels != null and levels != ''">AND levels = #{levels}</if>
+		<if test="grade != null and grade != ''">AND grade = #{grade}</if>
+		<if test="majorname != null and majorname != ''">AND majorname = #{majorname}</if>
+		<if test="classname != null and classname != ''">AND classname = #{classname}</if>
+		<if test="studentid != null and studentid != ''">AND studentid = #{studentid}</if>
+		<if test="studentname != null and studentname != ''">AND studentname LIKE '%${studentname}%'</if>
+		<if test="competitiontype != null and competitiontype != ''">AND competitiontype = #{competitiontype}</if>
+		<if test="ranks != null and ranks != ''">AND ranks = #{ranks}</if>
+	</select>
+</mapper>

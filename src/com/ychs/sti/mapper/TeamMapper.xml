@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace = "com.ychs.sti.mapper.TeamMapper">
+	<insert id="insertTeamInfo" parameterType="com.ychs.sti.model.Team">
+		INSERT INTO team VALUES(0,#{competitionid},#{teamid},#{teamname}
+		,#{studentid},#{studentname},#{sex}
+		,#{mobile},#{email},#{roleflag}
+		,#{teachername},#{departmentname},#{majorname},#{classname}
+		,#{grade},#{userrealname},NOW())
+	</insert>
+<!-- 	模糊查询+分页显示 -->
+	<select id="selectTeamByPage" resultType="com.ychs.sti.model.Team">
+		SELECT *
+		FROM team
+		INNER JOIN competition
+		ON team.`competitionid` = competition.`competitionid`
+		WHERE 1=1
+		<if test="competitionname != null and competitionname != ''">AND competitionname LIKE '%${competitionname}%'</if>
+		<if test="teamname != null and teamname != ''">AND teamname LIKE '%${teamname}%'</if>
+		<if test="studentname != null and studentname != ''">AND studentname LIKE '%${studentname}%'</if>
+		<if test="teachername != null and teachername != ''">AND teachername LIKE '%${teachername}%'</if>
+		<if test="roleflag != null and roleflag != ''">AND roleflag = #{roleflag}</if>
+		<if test="majorname != null and majorname != ''">AND majorname = #{majorname}</if>
+		<if test="classname != null and classname != ''">AND classname LIKE '%${classname}%'</if>
+		<if test="grade != null and grade != ''">AND grade = #{grade}</if>
+		LIMIT #{start},#{rows}
+	</select>
+	<!-- 查询记录总条数 -->
+	<select id="selectTotalCount" resultType="int">
+		SELECT COUNT(*)
+		FROM team
+		INNER JOIN competition
+		ON team.`competitionid` = competition.`competitionid`
+		WHERE 1=1
+		<if test="competitionname != null and competitionname != ''">AND competitionname LIKE '%${competitionname}%'</if>
+		<if test="teamname != null and teamname != ''">AND teamname LIKE '%${teamname}%'</if>
+		<if test="studentname != null and studentname != ''">AND studentname LIKE '%${studentname}%'</if>
+		<if test="teachername != null and teachername != ''">AND teachername LIKE '%${teachername}%'</if>
+		<if test="roleflag != null and roleflag != ''">AND roleflag = #{roleflag}</if>
+		<if test="majorname != null and majorname != ''">AND majorname = #{majorname}</if>
+		<if test="classname != null and classname != ''">AND classname LIKE '%${classname}%'</if>
+		<if test="grade != null and grade != ''">AND grade = #{grade}</if>
+	</select>
+	<!-- 删除 -->
+	<delete id="deleteTeam">
+		DELETE FROM team WHERE teamkey = #{teamkey}
+	</delete>
+	<update id="updateTeam" parameterType="com.ychs.sti.model.Team">
+		UPDATE team SET competitionid = #{competitionid},teamid=#{teamid},teamname=#{teamname},studentid=#{studentid},studentname=#{studentname}
+		,sex=#{sex},mobile=#{mobile},email=#{email},roleflag=#{roleflag},departmentname=#{departmentname},teachername=#{teachername},majorname=#{majorname},classname=#{classname}
+		,grade=#{grade},userrealname=#{userrealname},inputtime=NOW()
+		WHERE teamkey = #{teamkey}
+	</update>
+	
+<!-- 	获奖记录验证队伍信息 -->
+	<select id="selectTeamByIdANDname" resultType="com.ychs.sti.model.Team">
+		SELECT teamkey
+		FROM team
+		WHERE competitionid = #{competitionid} AND teamid = #{teamid} AND teamname = #{teamname}
+	</select>
+	<!-- 验证-级联 -->
+	<select id="selectTeamById" resultType="com.ychs.sti.model.Team">
+		SELECT DISTINCT(teamid),teamname 
+		FROM team
+		WHERE competitionid = #{competitionid}
+	</select>
+	<!-- 验证-级联 -->
+	<select id="selectTeamnameById" resultType="com.ychs.sti.model.Team">
+		SELECT DISTINCT(teamname) 
+		FROM team
+		WHERE teamid = #{teamid}
+	</select>
+	<!-- 参赛人数 -->
+	<select id="statAllTeamnumber" resultType="int">
+		SELECT COUNT(DISTINCT(studentid)) AS number FROM team
+	</select>
+	<!-- 获奖人数 -->
+	<select id="winnerNumber"  resultType="int">
+		SELECT number FROM winnernumber
+	</select>
+	<!-- 获奖率 -->
+	<select id="winnerRate" resultType="String">
+		SELECT B.number/A.number*100 AS rate
+		FROM 
+		(SELECT teamid, COUNT(DISTINCT(studentid)) number FROM team) A 
+		LEFT JOIN
+		winnernumber B
+		ON A.teamid = B.teamid
+	</select>
+	<!-- 参赛人数最多专业 -->
+	<select id="teamMaxnumber" resultType="String">
+		SELECT MAX(A.majorname) majorname
+		FROM
+		(SELECT majorname,COUNT(DISTINCT(studentid)) number
+		FROM team
+		GROUP BY majorname) A
+	</select>
+	<!-- 该专业获奖率 -->
+	<select id="teamMaxnumberRate" resultType="String">
+		SELECT (SELECT MAX(A.number) number FROM (SELECT majorname,COUNT(DISTINCT(studentid)) number FROM team GROUP BY majorname) A)/winnernumber.`number`*100 AS rate 
+		FROM winnernumber
+	</select>
+	<select id="teamMaxgrade" resultType="String">
+		SELECT * FROM grade_number_limit LIMIT 1
+	</select>
+	<select id="teamMaxgradeRate" resultType="String">
+		SELECT (SELECT number FROM grade_number_limit LIMIT 1)/winnernumber.`number`*100 AS rate
+		FROM winnernumber
+	</select>
+	<!-- 各年级参赛人数 -->
+	<select id="teamgradeNumber" resultType="com.ychs.sti.model.Team">
+		SELECT grade,COUNT(*) number
+		FROM team
+		WHERE 1=1
+		<if test="competitionid != null and competitionid != ''">AND competitionid = #{competitionid}</if>
+		<if test="grade != null and grade != ''">AND grade = #{grade}</if>
+		<if test="studentid != null and studentid != ''">AND studentid = #{studentid}</if>
+		<if test="classname != null and classname != ''">AND classname LIKE '%${classname}%'</if>
+		GROUP BY grade
+	</select>
+	<!-- 各班级参赛人数 -->
+	<select id="teamclassNumber" resultType="com.ychs.sti.model.Team">
+		SELECT classname,COUNT(*) number
+		FROM team
+		WHERE 1=1
+		<if test="competitionid != null and competitionid != ''">AND competitionid = #{competitionid}</if>
+		<if test="grade != null and grade != ''">AND grade = #{grade}</if>
+		<if test="studentid != null and studentid != ''">AND studentid = #{studentid}</if>
+		<if test="classname != null and classname != ''">AND classname LIKE '%${classname}%'</if>
+		GROUP BY classname
+	</select>
+	<!-- 各专业参与人数 -->
+	<select id="teammajorNumber" resultType="com.ychs.sti.model.Team">
+		SELECT majorname,COUNT(*) number
+		FROM team
+		WHERE 1=1
+		<if test="competitionid != null and competitionid != ''">AND competitionid = #{competitionid}</if>
+		<if test="grade != null and grade != ''">AND grade = #{grade}</if>
+		<if test="studentid != null and studentid != ''">AND studentid = #{studentid}</if>
+		<if test="majorname != null and majorname != ''">AND majorname LIKE '%${majorname}%'</if>
+		<if test="classname != null and classname != ''">AND classname LIKE '%${classname}%'</if>
+		GROUP BY majorname
+	</select>
+	<!-- 各年级各专业获奖人数-可查询 -->
+	<select id="winnerMajorGradeNumber" resultType="com.ychs.sti.model.Team">
+		SELECT major.majorname,IFNULL(U,0) U,IFNULL(V,0) V,IFNULL(W,0) W,IFNULL(X,0) X,IFNULL(Y,0) Y
+		FROM major
+		LEFT JOIN
+		(SELECT majorname,COUNT(CASE WHEN ranks='一等奖' THEN 1 END) AS U,
+		COUNT(CASE WHEN ranks='二等奖' THEN 1 END) AS V,
+		COUNT(CASE WHEN ranks='三等奖' THEN 1 END) AS W,
+		COUNT(CASE WHEN ranks='特等奖' THEN 1 END) AS X,
+		COUNT(CASE WHEN ranks='优秀奖' THEN 1 END) AS Y
+		FROM team
+		LEFT JOIN
+		competition
+		ON team.`competitionid`=competition.`competitionid`
+		LEFT JOIN 
+		record
+		ON record.`teamid`=team.`teamid`
+		WHERE 1=1
+		<if test="competitionid != null and competitionid != ''">AND record.competitionid = #{competitionid}</if>
+		<if test="grade != null and grade != ''">AND grade = #{grade}</if>
+		GROUP BY majorname) M
+		ON major.`majorname`= M.majorname
+		
+		<!-- SELECT majorname,COUNT(CASE WHEN ranks='一等奖' THEN 1 END) AS U,
+		COUNT(CASE WHEN ranks='二等奖' THEN 1 END) AS V,
+		COUNT(CASE WHEN ranks='三等奖' THEN 1 END) AS W,
+		COUNT(CASE WHEN ranks='特等奖' THEN 1 END) AS X,
+		COUNT(CASE WHEN ranks='优秀奖' THEN 1 END) AS Y
+		FROM team
+		LEFT JOIN
+		competition
+		ON team.`competitionid`=competition.`competitionid`
+		LEFT JOIN 
+		record
+		ON record.`teamid`=team.`teamid`
+		WHERE 1=1
+		<if test="competitionid != null and competitionid != ''">AND competitionid = #{competitionid}</if>
+		<if test="grade != null and grade != ''">AND grade = #{grade}</if>
+		GROUP BY majorname -->
+	</select>
+</mapper>

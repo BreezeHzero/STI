@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace = "com.ychs.sti.mapper.LoginlogMapper">
+	<insert id="insertLoginlog" parameterType="com.ychs.sti.model.Loginlog">
+		INSERT INTO loginlog VALUES(0,#{realname},NOW(),#{loginip})
+	</insert>
+	<select id="selectLoginlog" resultType="com.ychs.sti.model.Loginlog">
+		SELECT * FROM loginlog WHERE realname = #{realname}
+	</select>
+</mapper>

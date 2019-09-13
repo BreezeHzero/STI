@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>录入团队信息</title>
+	<meta name="renderer" content="webkit">
+  	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">	
+  	<link rel="stylesheet" href="../layui/css/layui.css" media="all" />
+  	<script src="../js/jquery.min.js"></script>
+</head>
+<body>
+<div style="width:50%;">
+<form class="layui-form" action="" id="the_form" lay-filter="example" >
+		<div class="layui-form-item" style="display:none;">
+		    <label class="layui-form-label"></label>
+		    <div class="layui-input-block">
+		      <input type="hidden" name="teamkey" id="teamkey" lay-verify="teamkey" autocomplete="off"  class="layui-input">
+		    </div>
+	  	</div>
+	  	
+	    <div class="layui-form-item">
+	      <label class="layui-form-label">赛事名称</label>
+	      <div class="layui-input-block">
+	        <select name="competitionid" id="competitionid" lay-verify="competitionid" lay-search=""  lay-filter="competitionid">
+	          <option value="">直接选择或搜索选择</option>
+	        </select>
+	      </div>
+	    </div>  
+  
+	  	<div class="layui-form-item" >
+		    <label class="layui-form-label">队伍编号</label>
+		    <div class="layui-input-block">
+		      <input type="text" name="teamid" id="teamid" lay-verify="teamid" autocomplete="off" placeholder="请输入队伍编号" class="layui-input">
+		      <i id="icon_close" style="color:#D3D3D3;font-size: 18px;position: absolute;top: 9px; right: 6px;cursor: pointer;" class="layui-icon layui-icon-close"></i>
+		    </div>
+	  	</div>
+	  	
+	  	<div class="layui-form-item" >
+		    <label class="layui-form-label">队伍名称</label>
+		    <div class="layui-input-block">
+		      <input type="text" name="teamname" id="teamname" lay-verify="teamname" autocomplete="off" placeholder="请输入队伍名称" class="layui-input">
+		      <i id="icon_close" style="color:#D3D3D3;font-size: 18px;position: absolute;top: 9px; right: 6px;cursor: pointer;" class="layui-icon layui-icon-close"></i>
+		    </div>
+	  	</div>
+  		  		
+	 	<div class="layui-form-item">
+	    	<label class="layui-form-label">院系名称</label>
+	   	 	<div class="layui-input-block">
+		      <select name="departmentname" id="departmentname" lay-verify="departmentname" disabled="disabled">
+		        <option value="计算机工程系">计算机工程系</option>
+		      </select>
+	    	</div>
+ 	 	</div>
+ 	 	
+ 	 	<div class="layui-form-item"> 	
+		      <label class="layui-form-label">年级</label>
+		      <div class="layui-input-block">
+		        <input type="text" class="layui-input" id="grade" name="grade" placeholder="请选择"  lay-filter="grade" lay-verify="grade" autocomplete="off">
+		      </div>      
+	     </div>
+	    
+    	<div class="layui-form-item">
+		    <label class="layui-form-label">专业</label>
+		    <div class="layui-input-block">
+		      <select name="majorname" id="majorname" lay-verify="majorname" lay-filter="majorname">
+		        <option value=""></option>
+		      </select>
+		    </div>
+	  	</div>
+	 
+    	<div class="layui-form-item">
+		    <label class="layui-form-label">班级</label>
+		    <div class="layui-input-block">
+		      <select name="classname" id="classname" lay-verify="classname"  lay-filter="classname">
+		        <option value=""></option>
+		      </select>
+		    </div>
+	  	</div>  
+  		
+	  	<div class="layui-form-item" >
+		    <label class="layui-form-label">学号</label>
+		    <div class="layui-input-block">
+		      <input type="text" name="studentid" id="studentid" lay-verify="studentid" autocomplete="off" placeholder="请输入学号" class="layui-input">
+		      <i id="icon_close" style="color:#D3D3D3;font-size: 18px;position: absolute;top: 9px; right: 6px;cursor: pointer;" class="layui-icon layui-icon-close"></i>
+		    </div>
+	  	</div>
+  
+	  	<div class="layui-form-item" >
+		    <label class="layui-form-label">姓名</label>
+		    <div class="layui-input-block">
+		      <input type="text" name="studentname" id="studentname" lay-verify="studentname" autocomplete="off" placeholder="请输入姓名" class="layui-input">
+		      <i id="icon_close" style="color:#D3D3D3;font-size: 18px;position: absolute;top: 9px; right: 6px;cursor: pointer;" class="layui-icon layui-icon-close"></i>
+		    </div>
+	  	</div>
+	  	
+	    <div class="layui-form-item">
+		    <label class="layui-form-label">性别</label>
+		    <div class="layui-input-block">
+		      <input type="radio" name="sex" value="男" title="男" checked="">
+		      <input type="radio" name="sex" value="女" title="女">
+		    </div>
+	    </div>
+    
+    	<div class="layui-form-item">
+		    <label class="layui-form-label">队长</label>
+		    <div class="layui-input-block">
+		      <input type="checkbox" name="roleflag" id="roleflag" lay-skin="switch" lay-text="是|否" lay-filter="roleflag" value="">
+		    </div>
+  		</div>
+  		
+ 	  	<div class="layui-form-item" >
+		    <label class="layui-form-label">指导老师</label>
+		    <div class="layui-input-block">
+		      <input type="text" name="teachername" id="teachername" lay-verify="teachername" autocomplete="off" placeholder="请输入老师姓名" class="layui-input">
+		      <i id="icon_close" style="color:#D3D3D3;font-size: 18px;position: absolute;top: 9px; right: 6px;cursor: pointer;" class="layui-icon layui-icon-close"></i>
+		    </div>
+	  	</div> 		
+  		
+	    <div class="layui-form-item">
+		    <div class="layui-inline">
+		      <label class="layui-form-label">联系电话</label>
+		      <div class="layui-input-block">
+		        <input type="tel" name="mobile" id="mobile" lay-verify="required|phone" autocomplete="off" class="layui-input">
+		      </div>
+		    </div>
+		</div>
+		<div class="layui-form-item">   
+		    <div class="layui-inline">
+		      <label class="layui-form-label">邮箱</label>
+		      <div class="layui-input-block">
+		        <input type="text" name="email" id="email" lay-verify="email" autocomplete="off" class="layui-input">
+		      </div>
+		    </div>
+	    </div>
+
+		<!-- <div class="layui-form-item" >
+		    <label class="layui-form-label">录入人</label>
+		    <div class="layui-input-block">
+		      <input type="text" name="userrealname" id="userrealname" lay-verify="userrealname" autocomplete="off" placeholder="请输入录入人" class="layui-input">
+		      <i id="icon_close" style="color:#D3D3D3;font-size: 18px;position: absolute;top: 9px; right: 6px;cursor: pointer;" class="layui-icon layui-icon-close"></i>
+		    </div>
+	  	</div> -->
+
+		  <div class="layui-form-item">
+		    <div class="layui-input-block">
+		      <button class="layui-btn" lay-submit="" lay-filter="demo1">录入</button>
+		      <button type="reset" class="layui-btn layui-btn-primary">重置</button> 
+		    </div>
+		  </div>
+</form>
+</div>
+<script type="text/javascript" src="../layui/layui.js"></script>
+<script type="text/javascript">
+layui.use(['form','laydate'],function(){
+	var form = layui.form;
+	var $ = layui.$;
+	var laydate = layui.laydate;
+	
+
+  //自定义验证规则
+  form.verify({
+  	competitionid: function(value){
+        if(value.length == 0){
+          return '请选择赛事名称';
+        }
+    },
+    teamid: function(value){
+      if(value.length == 0){
+        return '队伍编号不能为空';
+      }
+    },
+    teamname: function(value){
+        if(value.length == 0){
+          return '队伍名称不能为空';
+        }
+    },
+    studentid: function(value){
+        if(value.length == 0){
+          return '请输入学号';
+        }
+    },
+    studentname: function(value){
+        if(value.length == 0){
+          return '姓名不能为空';
+        }
+    },
+    teachername: function(value){
+        if(value.length == 0){
+          return '姓名不能为空';
+        }
+    },
+    majorname: function(value){
+        if(value.length == 0){
+          return '请选择专业名称';
+        }
+    },
+    classname: function(value){
+        if(value.length == 0){
+          return '请选择班级名称';
+        }
+    },
+    grade: function(value){
+        if(value.length == 0){
+          return '请选择年级';
+        }
+    }
+  });
+  $.getJSON("../FindAllCompetitionServlet",{},function(data){
+		$.each(data,function(index,item){
+			$("#competitionid").append($("<option>").val(item.competitionid).text(item.competitionname));
+		});
+		form.render();
+  });
+ //监听grade
+	laydate.render({
+	    elem: '#grade'
+	    ,type: 'year'
+	    ,done:function(value){
+	    	if(value != ""){
+	    		 $.getJSON("../FindAllMajorServlet",{},function(data){
+					  	$.each(data,function(index,item){
+					  		$("#majorname").append($("<option>").val("请选择"));
+							$("#majorname").append($("<option>").val(item.majorname).text(item.majorname));
+						});
+						form.render();
+				  });
+	    	}else{
+	    	  $("#majorname").html("");
+			  $("#classname").html("");
+			  form.render(); 
+	    	};
+	    }
+	  });
+
+  //过滤器名
+  //监听majorname
+  form.on('select(majorname)',function(){
+	  $("#classname").html("");
+	  $.getJSON("../FindClassesinfoByMajoridServlet",{
+	  		'majorname':$("#majorname").val(),
+	  		'grade':$("#grade").val()
+		},function(data){
+	  	$.each(data,function(index,item){
+			$("#classname").append($("<option>").val("请选择"));
+			$("#classname").append($("<option>").val(item.classname).text(item.classname));
+		});
+		form.render();  
+	  });
+  });
+  
+  form.on('select(classname)',function(){
+	 	  var a = document.getElementById("majorname"); //mySelect是select 的Id
+	  	  if($("#grade").val() == ''){
+	  		  layer.msg('请先指定年级');
+	  		  a.options[0].selected = true;
+	  	      $("#majorname").html("");
+	  	  }  
+   });
+  form.on('switch(roleflag)',function(data){
+  		/* console.log(this.value); */
+  	     /* var roleflag = this.checked?'是':'否'; */
+  	     if(data.elem.checked == true){
+  	    	 this.value = '是';
+  	    	console.log(this.value);
+  	     }else{
+  	    	 this.value = '否';
+  	    	console.log(this.value);
+  	     }
+  });
+
+  form.on('submit(demo1)', function(data){
+	  var sex = $("input[type=radio]:checked").val();
+	  $.getJSON("../GetUsersinfoSessionServlet",{},function(res){
+		  $.getJSON("../AddTeamServlet",{
+				 'teamkey':$("#teamkey").val(),
+				 'competitionid':$("#competitionid").val(),
+				 'teamid':$("#teamid").val(),
+				 'teamname':$("#teamname").val(),
+				 'studentid':$("#studentid").val(),
+				 'studentname':$("#studentname").val(),
+				 'sex':sex,
+				 'mobile':$("#mobile").val(),
+				 'email':$("#email").val(),
+				 'roleflag':$("#roleflag").val(),
+				 'teachername':$("#teachername").val(),
+				 'departmentname':$("#departmentname").val(),
+				 'majorname':$("#majorname").val(),
+				 'grade':$("#grade").val(),
+				 'classname':$("#classname").val(),
+				 'userrealname':res.realname
+			 },function(data){
+				 if(data>0){
+					 layer.msg('添加成功', {icon: 1});
+					 $("#the_form")[0].reset();
+				 }else{
+					 layer.msg('添加失败', {
+					      time: 3000 //3s后自动关闭
+					    });
+				 }
+			 });
+	  });
+    return false;
+  });  
+  //清空单个表单
+  $(document).on('click','#icon_close',function(){
+	  document.getElementById("teamid").value="";
+  });
+  $(document).on('click','#icon_close',function(){
+	  document.getElementById("teamname").value="";
+  });
+  $(document).on('click','#icon_close',function(){
+	  document.getElementById("studentid").value="";
+  });
+  $(document).on('click','#icon_close',function(){
+	  document.getElementById("studentname").value="";
+  });
+  $(document).on('click','#icon_close',function(){
+	  document.getElementById("teachername").value="";
+  });
+	
+/* layui.use结尾 */	
+});
+</script>	
+
+</body>
+</html>

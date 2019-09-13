@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<!-- 指定字符集 -->
+	    
+	    <!-- 使用Edge最新的浏览器的渲染方式 -->
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	    <!-- viewport视口：网页可以根据设置的宽度自动进行适配，在浏览器的内部虚拟一个容器，容器的宽度与设备的宽度相同。
+	    width: 默认宽度与设备的宽度相同
+	    initial-scale: 初始的缩放比，为1:1 -->
+	    <meta name="viewport" content="width=device-width, initial-scale=1">
+	    <!-- 上述3个meta标签*必须*放在最前面，任何其他内容都*必须*跟随其后！ -->
+	    <META HTTP-EQUIV="pragma" CONTENT="no-cache"> 
+		<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate"> 
+		<META HTTP-EQUIV="expires" CONTENT="0">
+		<title>用户信息</title>
+		
+		<link rel="stylesheet" href="../layui/css/layui.css" media="all" />
+</head>
+<body>
+	<!-- 搜索框，添加框 -->
+<div class="layui-form" action="">
+	<div style="padding: 5px;"></div>
+	<div class="layui-inline" style="width:1000;height:25;padding-left:10px;">
+
+	    <div class="layui-inline">
+	    	<input id="search_input_username" class="layui-input" name="username" placeholder="请输入用户名" autocomplete="off" style="height:25;width:250" type='text' value=""/>
+	    	<i id="icon_close" style="color:#D3D3D3;font-size: 18px;position: absolute;top: 9px; right: 6px;cursor: pointer;" class="layui-icon layui-icon-close"></i>
+	    </div>
+	    
+	    <div class="layui-inline">
+	    	<input id="search_input_realname" class="layui-input" name="realname" placeholder="请输入姓名" autocomplete="off" style="height:25;width:250" type='text' value=""/>
+	    	<i id="icon_close" style="color:#D3D3D3;font-size: 18px;position: absolute;top: 9px; right: 6px;cursor: pointer;" class="layui-icon layui-icon-close"></i>
+	    </div>
+
+	    <div class="layui-inline">
+	      <div class="layui-input-inline"  style="width:100px;">
+	        <select name="userrole"  id="userrole" lay-search="">
+	          	<option value="" selected="selected"></option>
+		        <option value="管理员">管理员</option>
+		        <option value="普通用户">普通用户</option>
+	        </select>
+	      </div>
+	    </div>
+	   
+    	<button id="search_btn" class="layui-btn" lay-submit=""  data-type="reload" lay-event="search">搜索</button>
+    </div>
+</div>
+
+
+<!-- 表单显示数据 -->
+<table id="test" class="layui-hide" lay-filter="demo"></table>
+<script type="text/html" id="switchTpl">
+  <input type="checkbox" name="userrole" value="{{d.userrole,d.userid}}" lay-skin="switch" lay-text="管理员|普通用户" lay-filter="userrole" {{ d.userrole == "管理员" ? 'checked' : '' }}>	
+</script> 
+
+
+ 
+ 
+<script type="text/html" id="barDemo">
+	 <a class="layui-btn layui-btn-xs" style="border-radius:15px;background-color:#2F4056;" lay-event="edit"><i class="layui-icon layui-icon-set" style="font-size: 40px;"></i>重置密码 </a>
+ 	<a class="layui-btn layui-btn-danger layui-btn-xs"  style="border-radius:100%;" lay-event="del"><i class="layui-icon layui-icon-delete" style="font-size: 60px;"></i> </a>
+</script>
+
+
+<script type="text/javascript" src="../layui/layui.js"></script> 
+<script>
+layui.use(['table','layer','form'], function(){
+  var table = layui.table;
+  var $=layui.$;
+  var layer=layui.layer;
+  var form=layui.form;
+  //表格渲染
+   $.getJSON("../FindUserByLikeServlet",{
+	   'username':$("#username").val(),
+	   'realname':$("#realname").val(),
+	   'userrole':$("#userrole").val()
+   },function(data){
+	   console.log(data);
+	   table.render({
+		  	parseData:function(data){
+		  		 return {
+					  'code':0 ,// 对应 code
+					  'msg' :"", // 对应 msg
+					  'count' :data, // 对应 count
+					  'data':data  // 对应 data
+					 }
+		  	}
+		    ,elem: '#test'
+		    ,method:"get"
+		    ,url:'../FindUserByLikeServlet'
+		    ,cellMinWidth: 150 //全局定义常规单元格的最小宽度，layui 2.2.1 新增 
+		    ,id:'idTest'
+		    ,cols: [[ //表头
+		    	{type:'numbers',title:'序号'}
+		        ,{field: 'username', title: '用户名'}
+		        ,{field: 'realname', title: '姓名'}
+		        ,{field: 'userrole', title: '用户角色'} 
+		        ,{field:'userrole', field:'userid',title:'角色管理',templet: '#switchTpl',align:'center',width:150}
+		        ,{fixed: 'right',title:'操作',align:'center', toolbar: '#barDemo',width:150}
+		      ]]
+		    ,page:false 		    
+	  });
+	   //监听角色操作
+	   form.on('switch(userrole)', function(obj){  
+	   		console.log(obj);
+	   	   var userid = obj.value;
+		   var valid = this.checked?'管理员':'普通用户';
+		   //如果选中它为true，则执行。。。。
+		   if(obj.elem.checked == true){
+				$.ajax({
+						url:'../UpdateUserRoleServlet',
+						type:'get',
+						data:{'userid':userid,'userrole':valid},
+						dataType:'json',
+						success:function(res){
+							layer.msg("已改为管理员");
+						    table.reload('idTest',{});
+						}
+				 });
+			 }else{
+				 $.ajax({
+						url:'../UpdateUserRoleServlet',
+						type:'get',
+						data:{'userid':userid,'userrole':valid},
+						dataType:'json',
+						success:function(res){
+							layer.msg("已改为普通用户");
+							table.reload('idTest',{});
+						}
+				 });
+			 }
+	   }); 
+   });
+
+ //监听工具条
+  table.on('tool(demo)', function(obj){
+    var data = obj.data;
+    if(obj.event === 'del'){
+    	layer.confirm('<span style="text-align:center;display:block;">' + '真的删除该用户么？' + '</span>', {
+    					icon:3
+    					,title:'提示'
+			  			,skin: 'layui-layer-molv' //样式类名
+				  		,success: function(layero){
+					    layero.find('.layui-layer-btn').css('text-align', 'center');
+					  }
+				},function(index){
+            $.getJSON("../RemoveUserServlet",{
+            	'userid':data.userid
+            },function(data){
+                if(data > 0){
+                	layer.msg('删除成功！');
+                	table.reload('idTest',{});
+                }
+            });
+            layer.close(index);
+    	});
+    } else if(obj.event === 'edit'){
+    	$.getJSON("../UpdateUserpswServlet",{
+    		'userid':data.userid
+    	},function(result){
+    		if(result>0){
+    			layer.alert('密码已重置 ，默认密码为“123456”', {
+    				  skin: 'layui-layer-molv' //样式类名
+    				  ,success: function(layero){
+    					    layero.find('.layui-layer-btn').css('text-align', 'center');
+    					  }
+    				  ,closeBtn: 0
+    				}, function(index){
+    					layer.close(index);
+    				});
+    		}
+    	});
+    }
+    /* 监听结尾 */
+  });
+
+  $('.demoTable .layui-btn').on('click', function(){
+	    var type = $(this).data('type');
+	    active[type] ? active[type].call(this) : '';
+	  });
+ 
+  
+  
+  /* 搜索按钮 */
+ var active={
+  		reload:function(){
+  		var username = document.getElementById("search_input_username").value;
+  		var realname = document.getElementById("search_input_realname").value;
+  		var userrole = document.getElementById("userrole").value;
+  		if(name != null){    
+  			table.reload('idTest',{ 			                                         
+  			              where: { 
+  				 			'username': username,
+  				 			'realname': realname,
+  				 			'userrole': userrole
+  						  }//这里传参  向后台
+  			              , url: '../FindUserByLikeServlet'//后台做模糊搜索接口路径
+  			              , method: 'get'
+  			              });
+  		                 }
+  		    }  
+    };
+  
+  $('#search_btn').on('click', function(){
+	                  var type = 'reload';
+	                  active[type] ? active[type].call(this) : '';
+	
+	                });  
+  //监听回车
+  $("#search_input_username").bind("keyup", function (e) {
+      if (e.keyCode == 13) {
+          var type = "reload";
+          active[type] ? active[type].call(this) : '';
+      }
+  });
+  $("#search_input_realname").bind("keyup", function (e) {
+      if (e.keyCode == 13) {
+          var type = "reload";
+          active[type] ? active[type].call(this) : '';
+      }
+  });
+  $("#userrole").bind("keyup", function (e) {
+      if (e.keyCode == 13) {
+          var type = "reload";
+          active[type] ? active[type].call(this) : '';
+      }
+  });
+  //清空单个表单
+  $(document).on('click','#icon_close',function(){
+	  document.getElementById("search_input_username").value="";
+  });
+  $(document).on('click','#icon_close',function(){
+	  document.getElementById("search_input_realname").value="";
+  });
+  
+
+/*  layui.use终点 */ 
+});
+</script>
+</body>
+</html>

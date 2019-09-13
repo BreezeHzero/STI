@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>赛事信息录入</title>
+	<link rel="stylesheet" href="../layui/css/layui.css" media="all" />
+</head>
+<body>
+<div style="width:50%">
+	<form class="layui-form" action="" id="the_form">
+		<div class="layui-form-item" style="display:none;">
+		    <label class="layui-form-label"></label>
+		    <div class="layui-input-block">
+		      <input type="hidden" name="competitionid" id="competitionid" lay-verify="competitionid" autocomplete="off"  class="layui-input">
+		    </div>
+	  	</div>
+	  	
+		      <div style="padding-top:15px;"></div>
+	  	<div class="layui-form-item">
+		    <label class="layui-form-label">赛事名称</label>
+		    <div class="layui-input-block">
+		      <input type="text" name="competitionname" id="competitionname" lay-verify="title" autocomplete="off" placeholder="请输入赛事名称" class="layui-input">
+		      <i id="icon_close" style="color:#D3D3D3;font-size: 18px;position: absolute;top: 9px; right: 6px;cursor: pointer;" class="layui-icon layui-icon-close"></i>
+		    </div>
+	  	</div>
+	  	
+	  	<div class="layui-inline">
+		      <label class="layui-form-label">举办日期</label>
+		      <div class="layui-input-inline">
+		        <input type="text" name="competitiondate" id="date" lay-verify="date" placeholder="请选择日期" autocomplete="off" class="layui-input">
+		        <div style="padding-bottom:15px;"></div>
+		      </div>
+    	</div>
+	  	
+	  	<div class="layui-form-item">
+			    <label class="layui-form-label">赛事级别</label>
+			    <div class="layui-input-block">
+			      <select name="levels" lay-filter="levels" id="levels" lay-verify="levels">
+			        <option value="" selected="selected"></option>
+			        <option value="国家级">国家级</option>
+			        <option value="省级">省级</option>
+			        <option value="校级">校级</option>
+			        <option value="院级">院级</option>
+			      </select>
+			    </div>
+  		</div>
+	  	
+	  	<div class="layui-form-item">
+			    <label class="layui-form-label">赛事类别</label>
+			    <div class="layui-input-block">
+			      <select name="competitiontype" lay-filter="competitiontype" id="competitiontype" lay-verify="competitiontype">
+			        <option value="" selected="selected"></option>
+			        <option value="A类">A类</option>
+			        <option value="B类">B类</option>
+			        <option value="C类">C类</option>
+			        <option value="其他类">其他类</option>
+			      </select>
+			    </div>
+  		</div>
+	  	
+	  	<div class="layui-form-item layui-form-text">
+			    <label class="layui-form-label">信息备注</label>
+			    <div class="layui-input-block">
+			      <textarea placeholder="大赛信息" class="layui-textarea" id="competitiondesc" name="competitiondesc"></textarea>
+			    </div>
+  		</div>
+  		
+  		 <div class="layui-form-item">
+		    <div class="layui-input-block">
+		      <button class="layui-btn" lay-submit="" lay-filter="demo1">提交</button>
+		      <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+		    </div>
+ 		 </div>
+	</form>
+</div>	
+	
+<script type="text/javascript" src="../layui/layui.js"></script>
+<script>
+layui.use(['form','laydate'],function(){
+	var form = layui.form;
+	var laydate = layui.laydate;
+	var $ = layui.$;
+	//日期渲染
+	laydate.render({
+		elem:'#date'
+	});
+	
+  //自定义验证规则
+  form.verify({
+    title: function(value){
+      if(value.length == 0){
+        return '赛事名称不能为空';
+      }
+    },
+    levels: function(value){
+        if(value.length == 0){
+          return '赛事级别不能为空';
+        }
+    },
+    competitiontype: function(value){
+        if(value.length == 0){
+          return '赛事类别不能为空';
+        }
+    }
+  });
+  //监听提交
+  //此data是表单数据
+  form.on('submit(demo1)', function(data){
+		//询问框
+	  layer.confirm('确认提交？', {
+	    btn: ['确定','取消'] //按钮
+	  }, function(){
+		  $.getJSON("../AddCompetitionServlet",{
+				 'competitionid':$("#competitionid").val(),
+				 'competitionname':$("#competitionname").val(),
+				 'competitiondate':$("#date").val(),
+				 'levels':$("#levels").val(),
+				 'competitiontype':$("#competitiontype").val(),
+				 'competitiondesc':$("#competitiondesc").val()
+			 },function(data){
+				 if(data>0){
+					 layer.msg('添加成功', {icon: 1});
+					 $("#the_form")[0].reset();
+				 }else{
+					 layer.msg('添加失败', {
+					      time: 3000, //3s后自动关闭
+					      btn: ['确定']
+					    });
+				 }
+			 });
+	  }, function(){
+	    layer.msg('添加失败', {
+	      time: 3000, //3s后自动关闭
+	      btn: ['确定']
+	    });
+	  });
+
+    return false;
+  });
+  //清空单个表单
+  $(document).on('click','#icon_close',function(){
+	  document.getElementById("competitionname").value="";
+  });
+	
+/* layui.use结尾 */	
+});
+</script>	
+	
+</body>
+</html>

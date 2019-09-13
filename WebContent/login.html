@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+
+<html>
+
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+		<title>登录</title>
+		<link rel="stylesheet" href="plugins/layui/css/layui.css" media="all" />
+		<link rel="stylesheet" href="css/login.css" />
+		<!-- <script src="js/jquery.cookie.js"></script>
+		<script src="js/jquery.min.js"></script> -->
+		<script src="https://cdn.staticfile.org/jquery/3.4.0/jquery.min.js"></script>
+		<script src="https://cdn.staticfile.org/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+	</head>
+	
+	<body class="beg-login-bg" style="background-image: url(img/view.jpg);background-size: cover">
+		<div class="beg-login-box">
+			<header>
+				<h1>大学生科技创新比赛管理平台</h1>
+			</header>
+			<div class="beg-login-main">
+				<form  action="" class="layui-form" method="post"><input name="__RequestVerificationToken" type="hidden" value="fkfh8D89BFqTdrE2iiSdG_L781RSRtdWOH411poVUWhxzA5MzI8es07g6KPYQh9Log-xf84pIR2RIAEkOokZL3Ee3UKmX0Jc8bW8jOdhqo81" />
+					<div class="layui-form-item">
+						<label class="beg-login-icon">
+                        <i class="layui-icon">&#xe612;</i>
+                    </label>
+						<input type="text" id="username" name="username" lay-verify="userName" autocomplete="off" placeholder="请输入用户名" class="layui-input">
+					</div>
+					<div class="layui-form-item">
+						<label class="beg-login-icon">
+                        <i class="layui-icon">&#xe642;</i>
+                    </label>
+						<input type="password" id="userpsw" name="userpsw" lay-verify="password" autocomplete="off" placeholder="请输入密码" class="layui-input">
+					</div>
+					<div class="layui-form-item">
+						<div class="beg-pull-left beg-login-remember">
+							<label>记住帐号？</label>
+							<input type="checkbox" id="rememberMe" name="rememberMe" lay-filter="rememberMe" lay-skin="switch" checked>
+						</div>
+						<div class="beg-pull-right">
+						<button class="layui-btn layui-btn-primary" lay-submit lay-filter="login">
+                            <i class="layui-icon">&#xe650;</i> 登录
+                        </button>
+						</div>
+						<div class="beg-clear"></div>
+					</div>
+				</form>
+			</div>
+			<footer>
+				<p>Beginner © www.tykjcxxfen.cn</p>
+			</footer>
+		</div>
+		<script type="text/javascript" src="plugins/layui/layui.js"></script>
+		<script>
+			layui.use(['layer', 'form'], function() {
+				var layer = layui.layer,
+					$ = layui.jquery,
+					form = layui.form();
+			   form.on('switch(rememberMe)',function(data){					
+					if(data.elem.checked == true){
+						/* data.value = '是'; */
+						document.getElementById("rememberMe").value="是";
+						console.log(data);
+					}else{
+						/* data.value = '';  */
+						document.getElementById("rememberMe").value="";
+						console.log(data);
+					} 
+					
+				});
+			   
+				form.on('submit(login)',function(data){
+					$.getJSON("CheckLoginServlet",{
+						'username':$("#username").val(),
+						'userpsw':$("#userpsw").val(),
+						'rememberMe':$("#rememberMe").val()
+					},function(res){
+						console.log(res);
+						if(res != null){
+							$.getJSON("GetUsersinfoSessionServlet",{},function(data2){
+								   location.href="AddLogininfoServlet?realname="+ res.realname;
+							   });
+							/* $.getJSON("GetUsersinfoSessionServlet",{},function(data2){
+								console.log(data2);
+								 //获取ip
+								$.getJSON("GetLoginipSessionServlet",{},function(res2){
+									console.log(res2);
+									$.getJSON("AddLogininfoServlet",{
+										'realname':data2.realname,
+										'loginip':res2
+									},function(result){console.log(1)});
+								}); 
+								
+							}); */
+							console.log("成功");
+							//location.href='index.html';
+						}else{
+							console.log("失败");
+							layer.msg('登录失败，请检查用户名或密码是否正确',function(){});
+						}
+					});
+					return false;
+				});  
+				
+				var cookieusername = $.cookie('cookieusername');
+				var cookieuserpsw = $.cookie('cookieuserpsw'); 
+				$(function(){
+					if((cookieusername != null && cookieuserpsw != null)||cookieusername != "" && cookieuserpsw != ""){						
+						$("#username").val(cookieusername).text(cookieusername);
+						$("#userpsw").val(cookieuserpsw).text(cookieuserpsw);
+					}
+					
+				});
+			});
+		</script>
+	</body>
+
+</html>

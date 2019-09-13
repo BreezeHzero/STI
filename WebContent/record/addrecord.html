@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>获奖信息录入</title>
+	<link rel="stylesheet" href="../layui/css/layui.css" media="all" />
+</head>
+<body>
+<div style="width:50%">
+	<form class="layui-form" action="" id="the_form">
+		
+	    <div class="layui-form-item">
+	      <label class="layui-form-label">赛事名称</label>
+	      <div class="layui-input-block">
+	        <select name="competitionid" id="competitionid" lay-verify="competitionid" lay-search=""  lay-filter="competitionid">
+	          <option value="">直接选择或搜索选择</option>
+	        </select>
+	      </div>
+	    </div>
+	  	
+ 		<div class="layui-form-item">
+		    <label class="layui-form-label">奖项</label>
+		    <div class="layui-input-block">
+		      <select name="ranks" lay-filter="ranks" id="ranks" lay-verify="ranks">
+		        <option value="" selected="selected"></option>
+		        <option value="特等奖">特等奖</option>
+		        <option value="一等奖">一等奖</option>
+		        <option value="二等奖">二等奖</option>
+		        <option value="三等奖">三等奖</option>
+		        <option value="优秀奖">优秀奖</option>
+		      </select>
+		    </div>
+  		</div>
+	  	
+	  	<div class="layui-form-item">
+		    <label class="layui-form-label">队伍编号</label>
+		    <div class="layui-input-block">
+		      <select name="teamid" lay-filter="teamid" id="teamid" lay-verify="teamid">
+		        <option value="" selected="selected"></option>
+		      </select>
+		    </div>
+  		</div>
+  		
+  		<div class="layui-form-item">
+		    <label class="layui-form-label">队伍名称</label>
+		    <div class="layui-input-block">
+		      <select name="teamname" lay-filter="teamname" id="teamname" lay-verify="teamname">
+		        <option value="" selected="selected"></option>
+		      </select>
+		    </div>
+  		</div>
+  		
+  		 <div class="layui-form-item">
+		    <div class="layui-input-block">
+		      <button class="layui-btn" lay-submit="" lay-filter="demo1">录入</button>
+		      <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+		    </div>
+ 		 </div>
+	</form>
+</div>	
+	
+<script type="text/javascript" src="../layui/layui.js"></script>
+<script>
+layui.use(['form'],function(){
+	var form = layui.form;
+	var $ = layui.$;
+	
+  //自定义验证规则
+  form.verify({
+	  competitionid: function(value){
+      if(value.length == 0){
+        return '赛事名称不能为空';
+      }
+    },
+    teamid: function(value){
+        if(value.length == 0){
+          return '请输入队伍编号';
+        }
+    },
+    teamname: function(value){
+        if(value.length == 0){
+          return '请输入队伍名称';
+        }
+    }
+  });
+  $.getJSON("../FindAllCompetitionServlet",{},function(data){
+		$.each(data,function(index,item){
+			$("#competitionid").append($("<option>").val(item.competitionid).text(item.competitionname));
+		});
+		form.render();
+   });
+  form.on('select(competitionid)',function(data){
+	  $("#teamid").html("");
+	  $("#teamname").html("");
+	  $.getJSON("../CheckTeamByIdServlet",{
+		  'competitionid':$('#competitionid').val()
+	  },function(res){
+			$.each(res,function(index,item){
+			  	$("#teamid").append($("<option>").val("请选择"));
+				$("#teamid").append($("<option>").val(item.teamid).text(item.teamid));
+			});
+			form.render();
+	   });
+  });
+  form.on('select(teamid)',function(data){
+	  $("#teamname").html("");
+	  $.getJSON("../CheckTeamnameByIdServlet",{
+		  'teamid':$('#teamid').val()
+	  },function(res){
+			$.each(res,function(index,item){
+			  $("#teamname").append($("<option>").val("请选择"));
+				$("#teamname").append($("<option>").val(item.teamname).text(item.teamname));
+			});
+			form.render();
+	   });
+  });
+  
+  //监听提交
+  //此data是表单数据
+  form.on('submit(demo1)', function(data){
+	  console.log(data);
+	  $.getJSON("../CheckTeaminfoServlet",{
+		  'competitionid':$('#competitionid').val(),
+		  'teamid':$('#teamid').val(),
+		  'teamname':$('#teamname').val()
+	  },function(res){
+		  console.log(res);
+		  if(res != ""){
+			  $.getJSON("../AddRecordServlet",{
+				  'competitionid':$("#competitionid").val(),
+				  'ranks':$("#ranks").val(),
+				  'teamid':$('#teamid').val(),
+				  'teamname':$('#teamname').val()
+			  },function(res2){
+				  if(res2 > 0){
+					  layer.msg('添加成功', {icon: 1});
+						 $("#the_form")[0].reset();
+				  }else{
+						 layer.msg('添加失败', {
+							  icon:2
+						      ,time: 3000 //3s后自动关闭
+						    });
+					 }
+			  });
+		  }else{
+			  layer.alert('录入失败，请确认该队伍是否被录入，或者该队伍是否参加过该赛事' , {icon:2});
+		  }
+	  });
+		//询问框
+	  /* layer.confirm('确认创建该用户为' + '"' + role + '"' + '?', {
+	    btn: ['确定','取消'] //按钮
+	  }, function(){
+		  $.getJSON("../AddUserService",{
+				 'userid':$("#userid").val(),
+				 'username':$("#username").val(),
+				 'realname':$("#realname").val(),
+				 'userpsw':$("#userpsw").val(),
+				 'userrole':role
+			 },function(data){
+				 if(data>0){
+					 layer.msg('添加成功', {icon: 1});
+					 $("#the_form")[0].reset();
+				 }else{
+					 layer.msg('添加失败', {
+					      time: 3000 //3s后自动关闭
+					    });
+				 }
+			 });
+	  }, function(){
+	    layer.msg('信息未添加', {
+	      time: 3000, //3s后自动关闭
+	    });
+	  });
+
+    return false; */
+	  return false;
+  });
+	
+/* layui.use结尾 */	
+});
+</script>	
+	
+</body>
+</html>

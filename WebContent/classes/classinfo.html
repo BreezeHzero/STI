@@ -1,0 +1,532 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>班级信息</title>
+	<META HTTP-EQUIV="pragma" CONTENT="no-cache"> 
+	<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate"> 
+	<META HTTP-EQUIV="expires" CONTENT="0">
+	<link rel="stylesheet" href="../layui/css/layui.css" media="all" />
+</head>
+<body>
+	<!-- 搜索框，添加框 -->
+	<div style="padding: 5px;"></div>
+	<div class="layui-inline" style="width:500;height:25;padding-left:10px;">
+
+	    <div class="layui-inline">
+	    	<input id="search_input_mname" class="layui-input" name="mname" placeholder="按专业搜索" autocomplete="off" style="height:25;width:250" type='text' value=""/>
+	    	<i id="icon_close" style="color:#D3D3D3;font-size: 18px;position: absolute;top: 9px; right: 6px;cursor: pointer;" class="layui-icon layui-icon-close"></i>
+	    </div>
+	    
+	    <div class="layui-inline">
+	    	<input id="search_input_cname" class="layui-input" name="cname"  placeholder="按班级搜索"  autocomplete="off" style="height:25;width:250" type='text' value=""/>
+	    	<i id="icon_close2" style="color:#D3D3D3;font-size: 18px;position: absolute;top: 9px; right: 6px;cursor: pointer;" class="layui-icon layui-icon-close"></i>
+	    </div>
+	    
+	    <div class="layui-inline">
+		      <div class="layui-input-inline">
+		        <input type="text" class="layui-input" id="gradeword" name="gradeword" autocomplete="off"  placeholder="请选择年级">
+		      </div>      
+    	  </div>
+	    <button id="search_btn" class="layui-btn" lay-submit=""  data-type="reload" lay-event="search">搜索</button>
+	    <button id="add" class="layui-btn" lay-submit=""  lay-event="newadd" >新增</button>
+    </div>
+	
+	<!-- 添加弹出表单。用于添加 -->
+	<!-- 添加表单 -->
+ 	<div class="site-text" style="margin: 5%; display: none" id="window"  target="test123">	
+	<form class="layui-form" id="add_class_form" method="post" lay-filter="example">
+	 
+	 <div class="layui-form-item">
+    	<label class="layui-form-label">专业名称</label>
+   	 	<div class="layui-input-block">
+	      <select name="majorname" lay-filter="majorname" id="majorname"  lay-verify="required">
+	        <option value="" ></option>
+	      </select>
+    	</div>
+ 	 </div>
+ 	 
+ 	 <div class="layui-inline">
+      <label class="layui-form-label">年级</label>
+      <div class="layui-input-inline">
+        <input type="text" class="layui-input" id="grade" placeholder="请选择"  lay-verify="grade">
+        <div style="padding-top:15px;"></div>
+      </div>      
+    </div>
+ 	 
+	  <div class="layui-form-item">
+	    <label class="layui-form-label">班级名称</label>
+	    <div class="layui-input-block">
+	      <input type="text" id="classname" name="classname"  lay-verify="title" autocomplete="off" placeholder="请输入班级名称" class="layui-input">
+	    </div>
+	  </div>
+	  
+	</form>
+	</div>
+	
+	<!-- 修改表单 -->
+	<div class="site-text" style="margin: 5%; display: none" id="window2"  target="test123">	
+		<form class="layui-form" id="edit_class_form" method="post" lay-filter="example2">
+		 
+		  <div class="layui-form-item" style="display:none;">
+		    <label class="layui-form-label">班级id</label>
+		    <div class="layui-input-block">
+		      <input type="hidden" id="classid" name="classid" autocomplete="off" class="layui-input">
+		    </div>
+		  </div>
+		 
+		  <div class="layui-form-item">
+	    	<label class="layui-form-label">专业名称</label>
+	   	 	<div class="layui-input-block">
+		      <select name="majorname" lay-filter="majorname2" id="majorname2"  lay-verify="required">
+		        <option value="" ></option>
+		      </select>
+	    	</div>
+ 	 	  </div>
+ 	 
+		  <div class="layui-form-item">
+		    <label class="layui-form-label">班级名称</label>
+		    <div class="layui-input-block">
+		      <input type="text" id="classname2" name="classname" lay-verify="title" autocomplete="off" placeholder="请输入名称" class="layui-input">
+		    </div>
+		  </div>
+		  
+		  <div class="layui-inline">
+		      <label class="layui-form-label">年级</label>
+		      <div class="layui-input-inline">
+		        <input type="text" class="layui-input" id="grade2" name="grade" placeholder="请选择"  lay-verify="grade" >
+		        <div style="padding-top:15px;"></div>
+		      </div>      
+    	  </div>
+		  
+		</form>
+	</div>
+	
+	<!-- 显示数据表格 -->
+	<table id="test" class="layui-hide" lay-filter="demo"></table>	
+	<div id="demo3"></div>
+
+	
+	
+<script type="text/html" id="barDemo">
+	<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看 </a>
+	<a class="layui-btn layui-btn-xs" lay-event="edit">编辑 </a>
+ 	<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>	
+	
+	
+	
+	
+	
+<script type="text/javascript" src="../layui/layui.js"></script> 
+<script>
+layui.use(['table','layer','form','laydate','laypage'],function(){
+	var table = layui.table;
+	var form = layui.form;
+	var $ = layui.$;
+	var layer = layui.layer;
+	var laydate = layui.laydate;
+	var laypage = layui.laypage;
+	
+	//默认选中第一页，限定每页10条数据
+	var currentPage = 1; //当前页
+	var rows = 10; //每页行数	
+	/* 表格渲染 */
+	$(document).ready(function(){
+		$.getJSON("../FindClassByPageServlet",{
+			'currentPage':currentPage,
+			'rows':rows
+		},function(data){
+			table.render({
+        		//向后台传参
+        		where:{
+        			'currentPage':currentPage,
+        			'rows':rows
+        		}
+        	  	,parseData:function(data){
+        	  		console.log(data);
+        	  		 return {
+        				  'code':0 ,// 对应 code
+        				  'msg' :"", // 对应 msg
+        				  'count' :data.totalCount, // 对应 count
+        				  'data':data.list  // 对应 data
+        				 }
+        	  	}
+        	    ,elem: '#test'
+        	    ,method:"get"
+        	    ,url:'../FindClassByPageServlet'
+        	    ,cellMinWidth: 150 //全局定义常规单元格的最小宽度，layui 2.2.1 新增 
+        	    ,id:'idTest'
+        	    ,cols: [[ //表头
+        	    	{type:'numbers',title:'序号'}
+        	        ,{field: 'majorname', title: '专业名称',width:250}
+        	        ,{field: 'classname', title: '班级名称',width:250}
+        	        ,{field: 'grade', title: '入学年份'}
+        	        ,{fixed: 'right', width:178, align:'center', toolbar: '#barDemo'}
+        	      ]]
+        	    ,page:false 
+        	    
+        	  });
+			pages(data.totalCount);
+		});
+	});
+	
+	function pages(count){
+		laypage.render({
+			    elem: 'demo3'
+			    ,count: count
+			    ,first: '首页'
+			    ,last: '尾页'
+			    ,prev: '<em>←</em>' 
+			    ,next: '<em>→</em>'
+			    ,skin:true
+			    ,jump: function(obj, first){
+			         if(!first){
+			        	//加载层-默认风格
+			        	 layer.load(2);
+			        	 //此处演示关闭
+			        	 setTimeout(function(){
+			        	   layer.closeAll('loading');
+			        	 }, 100);
+			             table.reload("idTest",{
+			            	 where:{
+		            			'currentPage':obj.curr,
+		            			'rows':obj.limit
+		            		} 
+			             });
+			            }
+			        }
+			  });
+		
+	}
+	  //表单验证
+	  form.verify({
+		    title: function(value){
+		      if(value.length == 0){
+		        return '班级名称不能为空';
+		      }
+		    },
+		    grade: function(value){
+		      if(value.length == 0){
+		        return '年级不能为空';
+		      }
+		    },
+		    required: function(value){
+		      if(value.length == 0){
+		        return '专业名称不能为空';
+		      }
+		    }
+		  });
+	
+	 //监听工具条
+	  table.on('tool(demo)', function(obj){
+	    var data = obj.data;
+	    console.log(data.classid);
+	    if(obj.event === 'del'){
+	    	layer.confirm('真的删除该条信息？', function(index){
+	            $.getJSON("../RemoveClassServlet",{
+	            	'classid':data.classid
+	            },function(data){
+	                if(data > 0){
+	                	//再次渲染表格
+	                	$.getJSON("../FindClassByPageServlet",{
+	            			'currentPage':currentPage,
+	            			'rows':rows
+	            		},function(data){
+	            			table.render({
+	                    		//向后台传参
+	                    		where:{
+	                    			'currentPage':currentPage,
+	                    			'rows':rows
+	                    		}
+	                    	  	,parseData:function(data){
+	                    	  		console.log(data);
+	                    	  		 return {
+	                    				  'code':0 ,// 对应 code
+	                    				  'msg' :"", // 对应 msg
+	                    				  'count' :data.totalCount, // 对应 count
+	                    				  'data':data.list  // 对应 data
+	                    				 }
+	                    	  	}
+	                    	    ,elem: '#test'
+	                    	    ,method:"get"
+	                    	    ,url:'../FindClassByPageServlet'
+	                    	    ,cellMinWidth: 150 //全局定义常规单元格的最小宽度，layui 2.2.1 新增 
+	                    	    ,id:'idTest'
+	                    	    ,cols: [[ //表头
+	                    	    	{type:'numbers',title:'序号'}
+	                    	        ,{field: 'majorname', title: '专业名称',width:250}
+	                    	        ,{field: 'classname', title: '班级名称',width:250}
+	                    	        ,{field: 'grade', title: '入学年份'}
+	                    	        ,{fixed: 'right', width:178, align:'center', toolbar: '#barDemo'}
+	                    	      ]]
+	                    	    ,page:false 
+	                    	    
+	                    	  });
+	            			pages(data.totalCount);
+	            		});	                	
+	                	layer.msg('删除成功！');
+	                }
+	            });
+	            layer.close(index);
+	    	});
+	    } else if(obj.event === 'edit'){
+	    		layer.open({
+	    			  type:1,
+	    			  title:"编辑",
+	    			  area:['50%','50%'],
+	    			  skin: 'layui-layer-molv',
+	    			  btn: ['确定', '取消'], 
+	    			 /*  shadeClose: true,
+	    			  shade: 0 ,//遮罩透明度 */
+	    			  content: $("#window2"),
+	    			  success:function(layero,index){
+	    				  console.log(data);
+	    				  form.val('example2',{
+	 	                	  'classid':data.classid,
+	 	                	  'majorname':data.majorname,
+	 	                	  'classname':data.classname,
+	 	                	  'grade':data.grade
+	 	                  });
+						  layero.addClass('layui-form');
+						  layero.find('.layui-layer-btn0').attr('lay-filter','example2').attr('lay-submit','');
+	    				  form.render();
+	               	 },
+	               	 //表单处需要添加表单验证，提示：专业不能为空，班级不能为空，年级不能为空
+	    			  yes:function(index,layero){    				  
+	    				  form.on('submit(example2)', function(data){
+	    						//询问框
+	    					  layer.confirm('确认提交？', {
+	    					    btn: ['确定','取消'] //按钮
+	    					  }, function(){
+	    						  var param = {    						  
+	    	    						  "classid":data.classid,//标识该行
+	    	    						  "classid":$("#classid").val(),
+	    	    						  "majorname":$("#majorname2").val(),
+	    	    						  "classname":$("#classname2").val(),
+	    	    						  "grade":$("#grade2").val()
+	    	    				  }
+	    						  $.getJSON("../UpdateClassServlet",param,function(data){
+	    								 if(data>0){
+	    									 layer.msg('修改成功', {icon: 1});
+	    									 $("#edit_class_form")[0].reset();//重置表单
+	    									 table.reload('idTest',{})//刷新表格
+	    								 }
+	    							 });
+	    					  }, function(){
+	    					    layer.msg('已取消操作', {
+	    					      time: 2000 //3s后自动关闭
+	    					    });
+	    					  });
+	    				    return false;
+	    				  });
+	    			  }
+	    		});
+	    }else if(obj.event === 'detail'){
+	    	layer.msg('系部：计算机工程系'+'</br> 专业编号：'+ data.majorid + '</br> 专业名称：'+ data.majorname + '</br> 班级编号：' + data.classid + '</br> 班级名称：' + data.classname,{icon:7,time:5000});
+	    }
+	    /* 监听结尾 */
+	  });
+	  
+	
+  $('.demoTable .layui-btn').on('click', function(){
+	    var type = $(this).data('type');
+	    active[type] ? active[type].call(this) : '';
+	  });
+	
+	//年选择器
+	  laydate.render({
+	    elem: '#grade'
+	    ,type: 'year'
+	  });
+	  laydate.render({
+		    elem: '#grade2'
+		    ,type: 'year'
+		  });
+	  laydate.render({
+		    elem: '#gradeword'
+		    ,type: 'year'
+		  });
+	  /* 给下拉框赋值 */		  
+	$.ajax({
+		 url:"../FindAllMajorServlet",
+		 dataType:'json',
+		 type:'get',
+		 success:function(data){
+			 $.each(data,function(index,item){
+				 $("#majorname").append(new Option(item.majorname,item.majorname));
+				 $("#majorname2").append(new Option(item.majorname,item.majorname));
+			 });
+				 layui.form.render("select");
+		 }
+	  });
+	/* 添加按钮 */
+	$("#add").click(function(){		
+		  layer.open({
+			  type:1,
+			  title:"新增",
+			  skin: 'layui-layer-molv',
+			  area:['50%','50%'],
+			  btn:['确定','取消'],
+			  content:$("#window"),		
+			  success:function(layero,index){
+				  layero.addClass('layui-form');
+				  layero.find('.layui-layer-btn0').attr('lay-filter','example').attr('lay-submit','');
+				  form.render();
+           	 },
+			  yes:function(index,layero){
+				  form.on('submit(example)', function(data){
+						//询问框
+					  layer.confirm('确认提交？', {
+					    btn: ['确定','取消'] //按钮
+					  }, function(){
+						  var param = {
+								  'majorname':$("#majorname").val(),
+								  'grade':$("#grade").val(),
+								  'classname':$("#classname").val()
+						  }
+						  $.getJSON("../AddClassServlet",param,function(data){
+								 if(data>0){
+									 layer.msg('修改成功', {icon: 1});
+									 $("#add_class_form")[0].reset();//重置表单
+									 //重加载表格及分页条
+									 $.getJSON("../FindClassByPageServlet",{
+					          				'currentPage':currentPage,
+					          				'rows':rows
+					          			},function(data){
+					          				table.render({
+					          	        		//向后台传参
+					          	        		where:{
+					          	        			'currentPage':currentPage,
+					          	        			'rows':rows
+					          	        		}
+					          	        	  	,parseData:function(data){
+					          	        	  		console.log(data);
+					          	        	  		 return {
+					          	        				  'code':0 ,// 对应 code
+					          	        				  'msg' :"", // 对应 msg
+					          	        				  'count' :data.totalCount, // 对应 count
+					          	        				  'data':data.list  // 对应 data
+					          	        				 }
+					          	        	  	}
+					          	        	    ,elem: '#test'
+					          	        	    ,method:"get"
+					          	        	    ,url:'../FindClassByPageServlet'
+					          	        	    ,cellMinWidth: 150 //全局定义常规单元格的最小宽度，layui 2.2.1 新增 
+					          	        	    ,id:'idTest'
+					          	        	    ,cols: [[ //表头
+					          	        	    	{type:'numbers',title:'序号'}
+					          	        	        ,{field: 'majorname', title: '专业名称',width:250}
+					          	        	        ,{field: 'classname', title: '班级名称',width:250}
+					          	        	        ,{field: 'grade', title: '入学年份'}
+					          	        	        ,{fixed: 'right', width:178, align:'center', toolbar: '#barDemo'}
+					          	        	      ]]
+					          	        	    ,page:false 
+					          	        	    
+					          	        	  });
+					          				pages(data.totalCount);
+					          			});
+								 }
+							 });
+					  }, function(){
+					    layer.msg('已取消操作', {
+					      time: 2000 //3s后自动关闭
+					    });
+					  });
+				    return false;
+				  });
+				  /* yes结束 */
+			  }
+		  });
+		/* add结束 */		  
+	  });
+	
+	  /* 搜索按钮 */
+	 var active={
+	  		reload:function(){
+	  		var mname = document.getElementById("search_input_mname").value;
+	  		console.log(mname);
+	  		var cname = document.getElementById("search_input_cname").value;
+	  		var gradeword = document.getElementById("gradeword").value;
+	  		/* if(mname != null || cname != null || gradeword != null){     */
+	  			/* table.reload('idTest',{ 			                                         
+	  			              where: { 'name': $.trim(name)}//这里传参  向后台
+	  			              , url: '../FindClassByPageServlet'//后台做模糊搜索接口路径
+	  			              , method: 'get'
+	  			              }); */
+			  			$.getJSON("../FindClassByPageServlet",{
+		      				'currentPage':currentPage,
+		      				'rows':rows,
+		      				'mname':mname,
+      	        			'cname':cname,
+      	        			'gradeword':gradeword
+		      			},function(data){
+		      				table.render({
+		      	        		//向后台传参
+		      	        		where:{
+		      	        			'currentPage':currentPage,
+		      	        			'rows':rows,
+		      	        			'mname':mname,
+		      	        			'cname':cname,
+		      	        			'gradeword':gradeword
+		      	        		}
+		      	        	  	,parseData:function(data){
+		      	        	  		console.log(data);
+		      	        	  		 return {
+		      	        				  'code':0 ,// 对应 code
+		      	        				  'msg' :"", // 对应 msg
+		      	        				  'count' :data.totalCount, // 对应 count
+		      	        				  'data':data.list  // 对应 data
+		      	        				 }
+		      	        	  	}
+		      	        	    ,elem: '#test'
+		      	        	    ,method:"get"
+		      	        	    ,url:'../FindClassByPageServlet'
+		      	        	    ,cellMinWidth: 150 //全局定义常规单元格的最小宽度，layui 2.2.1 新增 
+		      	        	    ,id:'idTest'
+		      	        	    ,cols: [[ //表头
+		      	        	    	{type:'numbers',title:'序号'}
+		      	        	        ,{field: 'majorname', title: '专业名称',width:250}
+		      	        	        ,{field: 'classname', title: '班级名称',width:250}
+		      	        	        ,{field: 'grade', title: '入学年份'}
+		      	        	        ,{fixed: 'right', width:178, align:'center', toolbar: '#barDemo'}
+		      	        	      ]]
+		      	        	    ,page:false 
+		      	        	    
+		      	        	  });
+		      				pages(data.totalCount);
+		      			});
+	  			
+	  		                /*  } */
+	  		    }  
+	    };
+	  
+	  $('#search_btn').on('click', function(){
+		                  var type = 'reload';
+		                  active[type] ? active[type].call(this) : '';
+		                });  
+	
+	  //监听回车
+	  $("#search_input_mname, #search_input_cname, #gradeword").bind("keyup", function (e) {
+	      if (e.keyCode == 13) {
+	          var type = "reload";
+	          active[type] ? active[type].call(this) : '';
+	      }
+	  });
+	  
+	  //清空事件
+	  $(document).on('click','#icon_close',function(){
+	  		document.getElementById("search_input_mname").value="";
+  	  });
+	  $(document).on('click','#icon_close2',function(){
+	  		document.getElementById("search_input_cname").value="";
+  	  });
+	
+/* layui.use结束 */	
+});
+
+</script>
+	
+	
+</body>
+</html>

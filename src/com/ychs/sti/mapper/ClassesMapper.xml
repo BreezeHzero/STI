@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org/DTD Mapper 3.0" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.ychs.sti.mapper.ClassesMapper">
+	<insert id="insertClass">
+		INSERT INTO classes VALUES(0,(SELECT majorid FROM major WHERE majorname = #{majorname}),#{classname},#{grade})
+	</insert>
+	
+<!-- 	分页查询-查出总记录数 -->
+	<select id="selectTotalCount" resultType="int">
+		SELECT COUNT(*)
+	    FROM classes
+	    INNER JOIN major
+		ON classes.`majorid` = major.`majorid`
+		WHERE 1=1
+		<if test="mname != null and mname != '' ">AND majorname LIKE '%${mname}%'</if>
+		<if test="cname != null and cname != '' ">AND classname LIKE '%${cname}%'</if>
+		<if test="gradeword != null and gradeword != '' ">AND grade=#{gradeword}</if>
+	</select>
+<!-- 查询出记录 -->
+	<select id="selectClassByPage" resultType = "com.ychs.sti.model.Classes"> 
+		SELECT *
+		FROM classes  
+		INNER JOIN major
+		ON classes.`majorid` = major.`majorid`
+		WHERE 1=1
+		<if test="mname != null and mname != '' ">AND majorname LIKE '%${mname}%'</if>
+		<if test="cname != null and cname != '' ">AND classname LIKE '%${cname}%'</if>
+		<if test="gradeword != null and gradeword != '' ">AND grade=#{gradeword}</if>
+		LIMIT #{start},#{rows}
+	</select>
+	<!-- 查出全部 -->
+	<select id="selectAllClasses" resultType = "com.ychs.sti.model.Classes">
+		SELECT * FROM classes
+	</select>
+	<!-- 修改 -->
+	<update id="updateClass">
+		UPDATE classes SET
+		majorid=(SELECT majorid FROM major WHERE majorname=#{majorname}),
+		 classname=#{classname},grade=#{grade} WHERE classid=#{classid}
+	</update>
+	
+	<!-- 删除 -->
+	<delete id="deleteClass">
+		DELETE FROM classes WHERE classid=#{classid}
+	</delete>
+<!-- 	根据专业id查出班级名称 -->
+	<select id="selectClassinfoByMajorid" resultType = "com.ychs.sti.model.Classes">
+		SELECT classes.*
+		FROM classes 
+		INNER JOIN major
+		ON classes.`majorid` = major.`majorid`
+		WHERE 1=1
+		<if test="majorname != null || majorname != '' ">AND major.`majorname`= #{majorname}</if>
+		<if test="grade != null || grade != '' ">AND grade = #{grade}</if>
+	</select>
+</mapper>

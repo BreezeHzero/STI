@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>赛事信息表</title>
+	<META HTTP-EQUIV="pragma" CONTENT="no-cache"> 
+	<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate"> 
+	<META HTTP-EQUIV="expires" CONTENT="0">
+	<link rel="stylesheet" href="../layui/css/layui.css" media="all" />
+</head>
+<body>
+	<!-- 搜索框，添加框 -->
+<div class="layui-form" action="">
+	<div style="padding: 5px;"></div>
+	<div class="layui-inline" style="width:1000;height:25;padding-left:10px;">
+
+	    <div class="layui-inline">
+	    	<input id="search_input_comname" class="layui-input" name="comname" placeholder="按赛事名称搜索" autocomplete="off" style="height:25;width:250" type='text' value=""/>
+	    	<i id="icon_close" style="color:#D3D3D3;font-size: 18px;position: absolute;top: 9px; right: 6px;cursor: pointer;" class="layui-icon layui-icon-close"></i>
+	    </div>
+    	  
+    	<div class="layui-inline">
+		      <div class="layui-input-inline">
+		        <input type="text" name="startdate" id="startdate"  placeholder="开始日期" autocomplete="off" class="layui-input">
+		      </div>
+    	</div>
+    	
+    	<div class="layui-inline">
+		      <div class="layui-input-inline">
+		        <input type="text" name="enddate" id="enddate"  placeholder="结束日期" autocomplete="off" class="layui-input">
+		      </div>
+    	</div>
+	    <div class="layui-inline">
+	      <div class="layui-input-inline"  style="width:100px;">
+	        <select name="levels"  id="levels" lay-search="">
+	          	<option value="" selected="selected">类型</option>
+		        <option value="国家级">国家级</option>
+		        <option value="省级">省级</option>
+		        <option value="校级">校级</option>
+		        <option value="院级">院级</option>
+	        </select>
+	      </div>
+	    </div>
+	    
+	    <div class="layui-inline">
+	      <div class="layui-input-inline"  style="width:100px;">
+	        <select name="comtype"  id="comtype" lay-search="">
+		        <option value="" selected="selected">级别</option>
+		        <option value="A类">A类</option>
+		        <option value="B类">B类</option>
+		        <option value="C类">C类</option>
+		        <option value="其他类">其他类</option>
+	        </select>
+	      </div>
+	    </div>
+    	<button id="search_btn" class="layui-btn" lay-submit=""  data-type="reload" lay-event="search">搜索</button>
+    	<button class="layui-btn" id="export"><i class="iconfont icon-export"></i> 导出</button>
+    </div>
+</div>
+
+	<!-- 修改表单 -->
+	<div class="site-text" style="margin: 5%; display: none" id="window"  target="test123">	
+		<form class="layui-form" id="edit_competition_form" method="post" lay-filter="example">
+		 
+		  <div class="layui-form-item">
+		    <label class="layui-form-label">赛事名称</label>
+		    <div class="layui-input-block">
+		      <input type="text" name="competitionname" id="competitionname" lay-verify="title" autocomplete="off" placeholder="请输入赛事名称" class="layui-input">
+		      <i id="icon_close" style="color:#D3D3D3;font-size: 18px;position: absolute;top: 9px; right: 6px;cursor: pointer;" class="layui-icon layui-icon-close"></i>
+		    </div>
+	  	</div>
+	  	
+	  	<div class="layui-inline">
+		      <label class="layui-form-label">举办日期</label>
+		      <div class="layui-input-inline">
+		        <input type="text" name="competitiondate" id="date" lay-verify="date" placeholder="请选择日期" autocomplete="off" class="layui-input">
+		        <div style="padding-bottom:15px;"></div>
+		      </div>
+    	</div>
+	  	
+	  	<div class="layui-form-item">
+			    <label class="layui-form-label">赛事级别</label>
+			    <div class="layui-input-block">
+			      <select name="levels" lay-filter="levels" id="levels" lay-verify="levels">
+			        <option value="" selected="selected"></option>
+			        <option value="国家级">国家级</option>
+			        <option value="省级">省级</option>
+			        <option value="校级">校级</option>
+			        <option value="院级">院级</option>
+			      </select>
+			    </div>
+  		</div>
+	  	
+	  	<div class="layui-form-item">
+			    <label class="layui-form-label">赛事类别</label>
+			    <div class="layui-input-block">
+			      <select name="competitiontype" lay-filter="competitiontype" id="competitiontype" lay-verify="competitiontype">
+			        <option value="" selected="selected"></option>
+			        <option value="A类">A类</option>
+			        <option value="B类">B类</option>
+			        <option value="C类">C类</option>
+			        <option value="其他类">其他类</option>
+			      </select>
+			    </div>
+  		</div>
+	  	
+	  	<div class="layui-form-item layui-form-text">
+			    <label class="layui-form-label">信息备注</label>
+			    <div class="layui-input-block">
+			      <textarea placeholder="大赛信息" class="layui-textarea" id="competitiondesc" name="competitiondesc"></textarea>
+			    </div>
+  		</div>
+		  
+		</form>
+	</div>
+
+
+	<!-- 显示数据表格 -->
+	<table id="test" class="layui-hide" lay-filter="demo"></table>	
+	<div id="demo3"></div>
+	
+	
+<script type="text/html" id="barDemo">
+	<a class="layui-btn layui-btn-xs" lay-event="edit">编辑 </a>
+ 	<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+	
+<script type="text/javascript" src="../layui/layui.js"></script> 
+<script>
+layui.use(['table','layer','form','laydate','laypage'],function(){
+	var table = layui.table;
+	var form = layui.form;
+	var $ = layui.$;
+	var layer = layui.layer;
+	var laydate = layui.laydate;
+	var laypage = layui.laypage;
+	var currentPage = 1; //当前页
+	var rows = 10; //每页行数	
+	
+	  laydate.render({
+		    elem: '#startdate'
+		  });
+	  laydate.render({
+		    elem: '#enddate'
+		  });
+	  laydate.render({
+		    elem: '#date'
+		  });
+	var ins1 = table.render({
+		//向后台传参
+		where:{
+			'currentPage':currentPage,
+			'rows':rows
+		}
+	  	,parseData:function(data){
+	  		console.log(data);
+	  		 return {
+				  'code':0 ,// 对应 code
+				  'msg' :"", // 对应 msg
+				  'count' :data.totalCount, // 对应 count
+				  'data':data.list  // 对应 data
+				 }
+	  	}
+	    ,elem: '#test'
+	    ,method:"get"
+	    ,url:'../FindCompetitionByPageServlet'
+	    ,cellMinWidth: 150 //全局定义常规单元格的最小宽度，layui 2.2.1 新增 
+	    ,id:'idTest'
+	    ,cols: [[ //表头
+	    	{type:'numbers',title:'序号'}
+	        ,{field: 'competitionname', title: '赛事名称',width:350}
+	        ,{field: 'competitiondate', title: '赛事日期',width:250}
+	        ,{field: 'levels', title: '赛事等级',width:100}
+	        ,{field: 'competitiontype', title: '赛事类型',width:100}
+	        ,{field: 'competitiondesc', title: '备注'}
+	        ,{fixed: 'right', width:178, align:'center', toolbar: '#barDemo'}
+	      ]]
+	    ,page:false 
+	    ,done: function (res, count) {
+            exportData=res.data;
+        }
+	  });
+	$("#export").click(function(){
+       	table.exportFile(ins1.config.id,exportData, 'xls');
+    })
+	/* 表格渲染 */
+	$(document).ready(function(){
+		$.getJSON("../FindCompetitionByPageServlet",{
+			'currentPage':currentPage,
+			'rows':rows
+		},function(data){
+			pages(data.totalCount);
+		});
+	});
+	
+	function pages(count){
+		laypage.render({
+			    elem: 'demo3'
+			    ,count: count
+			    ,first: '首页'
+			    ,last: '尾页'
+			    ,prev: '<em>←</em>' 
+			    ,next: '<em>→</em>'
+			    ,skin:true
+			    ,jump: function(obj, first){
+			         if(!first){
+			        	//加载层-默认风格
+			        	 layer.load(2);
+			        	 //此处演示关闭
+			        	 setTimeout(function(){
+			        	   layer.closeAll('loading');
+			        	 }, 100);
+			             table.reload("idTest",{
+			            	 where:{
+		            			'currentPage':obj.curr,
+		            			'rows':obj.limit
+		            		} 
+			             });
+			            }
+			        }
+			  });
+	}	
+	
+	  /* 搜索按钮 */
+	 var active={
+	  		reload:function(){
+	  		var comname = document.getElementById("search_input_comname").value;
+	  		var startdate = document.getElementById("startdate").value;
+	  		var enddate = document.getElementById("enddate").value;
+	  		var levels = document.getElementById("levels").value;
+	  		var comtype = document.getElementById("comtype").value;
+			  			 $.getJSON("../FindCompetitionByPageServlet",{
+		      				'currentPage':currentPage,
+		      				'rows':rows,
+		      				'comname':comname,
+		      				'startdate':startdate,
+     	        			'enddate':enddate,
+     	        			'levels':levels,
+     	        			'comtype':comtype
+		      			},function(data){
+		      				table.render({
+		      	        		//向后台传参
+		      	        		where:{
+		      	        			'currentPage':currentPage,
+		      	        			'rows':rows,
+		      	        			'comname':comname,
+		      	        			'startdate':startdate,
+		     	        			'enddate':enddate,
+		     	        			'levels':levels,
+		     	        			'comtype':comtype
+		      	        		}
+		      	        	  	,parseData:function(data){
+		      	        	  		console.log(data);
+		      	        	  		 return {
+		      	        				  'code':0 ,// 对应 code
+		      	        				  'msg' :"", // 对应 msg
+		      	        				  'count' :data.totalCount, // 对应 count
+		      	        				  'data':data.list  // 对应 data
+		      	        				 }
+		      	        	  	}
+		      	        	    ,elem: '#test'
+		      	        	    ,method:"get"
+		      	        	    ,url:'../FindCompetitionByPageServlet'
+		      	        	    ,cellMinWidth: 150 //全局定义常规单元格的最小宽度，layui 2.2.1 新增 
+		      	        	    ,id:'idTest'
+		      	        	    ,cols: [[ //表头
+		      	        	    	{type:'numbers',title:'序号'}
+		      	        	        ,{field: 'competitionname', title: '赛事名称',width:350}
+		      	        	        ,{field: 'competitiondate', title: '赛事日期',width:250}
+		      	        	        ,{field: 'levels', title: '赛事等级',width:100}
+		      	        	        ,{field: 'competitiontype', title: '赛事类型',width:100}
+		      	        	        ,{field: 'competitiondesc', title: '备注'}
+		      	        	        ,{fixed: 'right', width:178, align:'center', toolbar: '#barDemo'}
+		      	        	      ]]
+		      	        	    ,page:false 
+		      	        	    
+		      	        	  });
+		      				pages(data.totalCount);
+		      			}); 
+	  			
+	  		    }  
+	    };
+	  
+	  $('#search_btn').on('click', function(){
+		                  var type = 'reload';
+		                  active[type] ? active[type].call(this) : '';
+		                });  
+	
+	  //监听回车
+	  $("#search_input_comname, #startdate, #enddate,#levels,#comtype").bind("keyup", function (e) {
+	      if (e.keyCode == 13) {
+	          var type = "reload";
+	          active[type] ? active[type].call(this) : '';
+	      }
+	  });
+	  
+	  //清空事件
+	  $(document).on('click','#icon_close',function(){
+	  		document.getElementById("search_input_comname").value="";
+ 	  });
+	
+		 //监听工具条
+	  table.on('tool(demo)', function(obj){
+	    var data = obj.data;
+	    console.log(data.classid);
+	    if(obj.event === 'del'){
+	    	layer.confirm('真的删除行么', function(index){
+	            $.getJSON("../RemoveCompetitionServlet",{
+	            	'competitionid':data.competitionid
+	            },function(data){
+	                if(data > 0){
+	                	//再次渲染表格
+	                	$.getJSON("../FindCompetitionByPageServlet",{
+	            			'currentPage':currentPage,
+	            			'rows':rows
+	            		},function(data){
+	            			table.render({
+	                    		//向后台传参
+	                    		where:{
+	                    			'currentPage':currentPage,
+	                    			'rows':rows
+	                    		}
+	                    	  	,parseData:function(data){
+	                    	  		 return {
+	                    				  'code':0 ,// 对应 code
+	                    				  'msg' :"", // 对应 msg
+	                    				  'count' :data.totalCount, // 对应 count
+	                    				  'data':data.list  // 对应 data
+	                    				 }
+	                    	  	}
+	                    	    ,elem: '#test'
+	                    	    ,method:"get"
+	                    	    ,url:'../FindCompetitionByPageServlet'
+	                    	    ,cellMinWidth: 150 //全局定义常规单元格的最小宽度，layui 2.2.1 新增 
+	                    	    ,id:'idTest'
+	                    	    ,cols: [[ //表头
+	                    	    	{type:'numbers',title:'序号'}
+	                    	    	,{field: 'competitionname', title: '赛事名称',width:350}
+		      	        	        ,{field: 'competitiondate', title: '赛事日期',width:250}
+		      	        	        ,{field: 'levels', title: '赛事等级',width:100}
+		      	        	        ,{field: 'competitiontype', title: '赛事类型',width:100}
+		      	        	        ,{field: 'competitiondesc', title: '备注'}
+	                    	        ,{fixed: 'right', width:178, align:'center', toolbar: '#barDemo'}
+	                    	      ]]
+	                    	    ,page:false 
+	                    	    
+	                    	  });
+	            			pages(data.totalCount);
+	            		});	                	
+	                	layer.msg('删除成功！');
+	                }
+	            });
+	            layer.close(index);
+	    	});
+	    } else if(obj.event === 'edit'){
+	    		layer.open({
+	    			  type:1,
+	    			  title:"编辑",
+	    			  area:['50%','80%'],
+	    			  skin: 'layui-layer-molv',
+	    			  btn: ['确定', '取消'], 
+	    			 /*  shadeClose: true,
+	    			  shade: 0 ,//遮罩透明度 */
+	    			  content: $("#window"),
+	    			  success:function(layero,index){
+	 	                  form.val('example',{
+	 	                	  'competitionname':data.competitionname,
+	 	                	  'competitiondate':data.competitiondate,
+	 	                	  'levels':data.levels,
+	 	                	  'competitiontype':data.competitiontype,
+	 	                	  'competitiondesc':data.competitiondesc
+	 	                  });
+	               	 },
+	               	 //表单处需要添加表单验证，提示：专业不能为空，班级不能为空，年级不能为空
+	    			  yes:function(index,layero){    				  
+	    				  var param = {    						  
+	    						  "competitionid":data.competitionid,
+	    						  "competitionname":$("#competitionname").val(),
+	    						  "competitiondate":$("#date").val(),
+	    						  "levels":$("#levels").val(),
+	    						  "competitiontype":$("#competitiontype").val(),
+	    						  "competitiondesc":$("#competitiondesc").val()
+	    				  }
+	    				  $.getJSON("../UpdateCompetitionServlet",param,function(data){
+	    					  if(data>0){
+	    	          			  layer.alert('修改成功',{icon:1,title:'提示'},function(i){
+	    	          				  layer.close(i);
+	    	                            layer.close(index);//关闭弹出层
+			    	          			//window.parent.location.reload();
+	    	                            $("#edit_competition_form")[0].reset();//重置form
+	    	          			  })
+	    	          			   table.reload('idTest',{})
+	    	          		  }
+	    				  });
+	    			  }
+	    		});
+	    }
+	    /* 监听结尾 */
+	  });
+	  
+	
+  $('.demoTable .layui-btn').on('click', function(){
+	    var type = $(this).data('type');
+	    active[type] ? active[type].call(this) : '';
+	  });
+//清空事件
+  $(document).on('click','#icon_close',function(){
+  		document.getElementById("competitionname").value="";
+	  });  
+	  
+/* layui.use底 */	
+});
+</script>	
+</body>
+</html>

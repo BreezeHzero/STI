@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>队伍信息</title>
+	<META HTTP-EQUIV="pragma" CONTENT="no-cache"> 
+	<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate"> 
+	<META HTTP-EQUIV="expires" CONTENT="0">
+	<link rel="stylesheet" href="../layui/css/layui.css" media="all" />
+</head>
+<body>
+	<!-- 搜索框，添加框 -->
+<div class="layui-form" action="">
+	<div style="padding: 5px;"></div>
+	<div class="layui-inline" style="width:500;height:25;padding-left:10px;">
+
+	    <div class="layui-inline">
+	    	<input id="competitionname" class="layui-input" name="competitionname" placeholder="赛事名称" autocomplete="off" style="height:25;width:250" type='text' value=""/>
+	    	<i id="icon_close" style="color:#D3D3D3;font-size: 18px;position: absolute;top: 9px; right: 6px;cursor: pointer;" class="layui-icon layui-icon-close"></i>
+	    </div>
+	    
+	    <div class="layui-inline">
+	    	<input id="teamname" class="layui-input" name="teamname" placeholder="队伍名称" autocomplete="off" style="height:25;width:250" type='text' value=""/>
+	    	<i id="icon_close" style="color:#D3D3D3;font-size: 18px;position: absolute;top: 9px; right: 6px;cursor: pointer;" class="layui-icon layui-icon-close"></i>
+	    </div>
+	    
+	    <div class="layui-inline">
+	    	<input id="studentname" class="layui-input" name="studentname"  placeholder="队员姓名"  autocomplete="off" style="height:25;width:150" type='text' value=""/>
+	    	<i id="icon_close" style="color:#D3D3D3;font-size: 18px;position: absolute;top: 9px; right: 6px;cursor: pointer;" class="layui-icon layui-icon-close"></i>
+	    </div>
+	    
+	    <div class="layui-inline">
+	    	<input id="teachername" class="layui-input" name="teachername"  placeholder="指导老师"  autocomplete="off" style="height:25;width:150" type='text' value=""/>
+	    	<i id="icon_close" style="color:#D3D3D3;font-size: 18px;position: absolute;top: 9px; right: 6px;cursor: pointer;" class="layui-icon layui-icon-close"></i>
+	    </div>
+	    
+	    <div class="layui-inline">
+	      <div class="layui-input-inline"  style="width:100px;">
+	        <select name="roleflag"  id="roleflag" lay-search="">
+	          	<option value="" selected="selected">队长</option>
+		        <option value="是">是</option>
+		        <option value="否">否</option>
+	        </select>
+	      </div>
+	    </div>
+	    
+	    <div class="layui-inline">
+	      <div class="layui-input-inline">
+	        <select name="majorname"  id="majorname" lay-search="">
+	          	<option value="" selected="selected">请选择专业</option>
+	        </select>
+	      </div>
+	    </div>
+	    
+	    <!-- <div class="layui-inline">
+	      <div class="layui-input-inline"  style="width:100px;">
+	        <select name="classname"  id="classname" lay-search="">
+		        <option value="" selected="selected"></option>
+	        </select>
+	      </div>
+	    </div> -->
+	    <div class="layui-inline">
+			  <input id="classname" class="layui-input" name="classname"  placeholder="班级名称"  autocomplete="off" style="height:25;width:250" type='text' value=""/>
+			  <i id="icon_close" style="color:#D3D3D3;font-size: 18px;position: absolute;top: 9px; right: 6px;cursor: pointer;" class="layui-icon layui-icon-close"></i>
+		</div>
+	    
+	    <div class="layui-inline">
+		      <div class="layui-input-inline">
+		        <input type="text" class="layui-input" id="grade" name="grade" placeholder="请选择年级" style="width:100px;" autocomplete="off">
+		      </div>      
+    	  </div>
+	    <button id="search_btn" class="layui-btn" lay-submit=""  data-type="reload" lay-event="search">搜索</button>
+	    <form action="../DoExport2Servlet" id="download_all_form" method="post" class="layui-inline" style="display: inline;"> 
+			<input type="hidden" id="page_all_data" class="layui-inline" name="userList"/>
+			<!-- <input type="hidden" id="exportAll_header" class="layui-inline" name="header_data" />  -->
+			<input type="button" class="layui-btn layui-btn-normal layui-inline" id="export" value="导出全部数据" /> 
+		</form>
+		<div class="abc layui-inline" style="display:none">
+			<input type="button" class="but layui-btn layui-btn-normal layui-inline" value="返回图表"/>
+		</div>
+    </div>
+</div>
+	<!-- 修改表单 -->
+<div class="site-text" style="margin: 5%; display: none" id="window2"  target="test123">	
+	<form class="layui-form" action="" id="the_form" lay-filter="example" >
+		<div class="layui-form-item" style="display:none;">
+		    <label class="layui-form-label"></label>
+		    <div class="layui-input-block">
+		      <input type="hidden" name="teamkey" id="teamkey" lay-verify="teamkey" autocomplete="off"  class="layui-input">
+		    </div>
+	  	</div>
+	  	
+	    <div class="layui-form-item">
+	      <label class="layui-form-label">赛事名称</label>
+	      <div class="layui-input-block">
+	        <select name="competitionid2" id="competitionid2" lay-verify="competitionid" lay-search=""  lay-filter="competitionid">
+	          <option value="">直接选择或搜索选择</option>
+	        </select>
+	      </div>
+	    </div>  
+  
+	  	<div class="layui-form-item" >
+		    <label class="layui-form-label">队伍编号</label>
+		    <div class="layui-input-block">
+		      <input type="text" name="teamid" id="teamid" lay-verify="teamid" autocomplete="off" placeholder="请输入队伍编号" class="layui-input">
+		      <i id="icon_close" style="color:#D3D3D3;font-size: 18px;position: absolute;top: 9px; right: 6px;cursor: pointer;" class="layui-icon layui-icon-close"></i>
+		    </div>
+	  	</div>
+	  	
+	  	<div class="layui-form-item" >
+		    <label class="layui-form-label">队伍名称</label>
+		    <div class="layui-input-block">
+		      <input type="text" name="teamname" id="teamname2" lay-verify="teamname" autocomplete="off" placeholder="请输入队伍名称" class="layui-input">
+		      <i id="icon_close" style="color:#D3D3D3;font-size: 18px;position: absolute;top: 9px; right: 6px;cursor: pointer;" class="layui-icon layui-icon-close"></i>
+		    </div>
+	  	</div>
+  		  		
+	 	<div class="layui-form-item">
+	    	<label class="layui-form-label">院系名称</label>
+	   	 	<div class="layui-input-block">
+		      <select name="departmentname" id="departmentname" lay-verify="departmentname" disabled="disabled">
+		        <option value="计算机工程系">计算机工程系</option>
+		      </select>
+	    	</div>
+ 	 	</div>
+ 	 	
+ 	 	<div class="layui-form-item"> 	
+		      <label class="layui-form-label">年级</label>
+		      <div class="layui-input-block">
+		        <input type="text" class="layui-input" id="grade2" name="grade" placeholder="请选择"  lay-filter="grade2" lay-verify="grade" autocomplete="off">
+		      </div>      
+	     </div>
+	    
+    	<div class="layui-form-item">
+		    <label class="layui-form-label">专业</label>
+		    <div class="layui-input-block">
+		      <select name="majorname2" id="majorname2" lay-verify="majorname" lay-filter="majorname">
+		        <option value=""></option>
+		      </select>
+		    </div>
+	  	</div>
+	 
+    	<div class="layui-form-item">
+		    <label class="layui-form-label">班级</label>
+		    <div class="layui-input-block">
+		      <select name="classname2" id="classname2" lay-verify="classname" lay-filter="classname">
+		        <option value=""></option>
+		      </select>
+		    </div>
+	  	</div>  
+  		
+	  	<div class="layui-form-item" >
+		    <label class="layui-form-label">学号</label>
+		    <div class="layui-input-block">
+		      <input type="text" name="studentid" id="studentid" lay-verify="studentid" autocomplete="off" placeholder="请输入学号" class="layui-input">
+		      <i id="icon_close" style="color:#D3D3D3;font-size: 18px;position: absolute;top: 9px; right: 6px;cursor: pointer;" class="layui-icon layui-icon-close"></i>
+		    </div>
+	  	</div>
+  
+	  	<div class="layui-form-item" >
+		    <label class="layui-form-label">姓名</label>
+		    <div class="layui-input-block">
+		      <input type="text" name="studentname" id="studentname2" lay-verify="studentname" autocomplete="off" placeholder="请输入姓名" class="layui-input">
+		      <i id="icon_close" style="color:#D3D3D3;font-size: 18px;position: absolute;top: 9px; right: 6px;cursor: pointer;" class="layui-icon layui-icon-close"></i>
+		    </div>
+	  	</div>
+	  	
+	    <div class="layui-form-item">
+		    <label class="layui-form-label">性别</label>
+		    <div class="layui-input-block">
+		      <input type="radio" name="sex" value="男" title="男" checked="">
+		      <input type="radio" name="sex" value="女" title="女">
+		    </div>
+	    </div>
+    
+    	<div class="layui-form-item">
+		    <label class="layui-form-label">队长</label>
+		    <div class="layui-input-block">
+		      <input type="checkbox" name="roleflag" id="roleflag2" value="" lay-skin="switch" lay-text="是|否" lay-filter="roleflag">
+		    </div>
+  		</div>
+  		
+ 	  	<div class="layui-form-item" >
+		    <label class="layui-form-label">指导老师</label>
+		    <div class="layui-input-block">
+		      <input type="text" name="teachername" id="teachername2" lay-verify="teachername" autocomplete="off" placeholder="请输入老师姓名" class="layui-input">
+		      <i id="icon_close" style="color:#D3D3D3;font-size: 18px;position: absolute;top: 9px; right: 6px;cursor: pointer;" class="layui-icon layui-icon-close"></i>
+		    </div>
+	  	</div> 		
+  		
+	    <div class="layui-form-item">
+		    <div class="layui-inline">
+		      <label class="layui-form-label">联系电话</label>
+		      <div class="layui-input-block">
+		        <input type="tel" name="mobile" id="mobile" lay-verify="required|phone" autocomplete="off" class="layui-input">
+		      </div>
+		    </div>
+		</div>
+		<div class="layui-form-item">   
+		    <div class="layui-inline">
+		      <label class="layui-form-label">邮箱</label>
+		      <div class="layui-input-block">
+		        <input type="text" name="email" id="email" lay-verify="email" autocomplete="off" class="layui-input">
+		      </div>
+		    </div>
+	    </div>
+	
+<!-- 		<div class="layui-form-item" >
+		    <label class="layui-form-label">录入人</label>
+		    <div class="layui-input-block">
+		      <input type="text" name="userrealname" id="userrealname" lay-verify="userrealname" autocomplete="off" placeholder="请输入录入人" class="layui-input">
+		      <i id="icon_close" style="color:#D3D3D3;font-size: 18px;position: absolute;top: 9px; right: 6px;cursor: pointer;" class="layui-icon layui-icon-close"></i>
+		    </div>
+	  	</div> -->
+	
+</form>
+</div>
+	
+	<!-- 显示数据表格 -->
+	<table id="test" class="layui-hide" lay-filter="demo"></table>	
+	<div id="demo3"></div>
+
+	
+	
+<script type="text/html" id="barDemo">
+	<a class="layui-btn layui-btn-primary layui-btn-xs" lay-event="detail">查看 </a>
+	<a class="layui-btn layui-btn-xs" lay-event="edit">编辑 </a>
+ 	<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>	
+	
+	
+<script type="text/javascript" src="../layui/layui.js"></script> 
+<script>
+layui.use(['table','layer','form','laydate','laypage'],function(){
+	var table = layui.table;
+	var form = layui.form;
+	var $ = layui.$;
+	var layer = layui.layer;
+	var laydate = layui.laydate;
+	var laypage = layui.laypage;
+	
+	
+	//默认选中第一页，限定每页10条数据
+	var currentPage = 1; //当前页
+	var rows = 10; //每页行数	
+	
+  laydate.render({
+	    elem: '#grade'
+	    ,type: 'year'
+	  });
+  var rowsex = "999999999";
+  $('#export').on('click',function () {
+  	$.ajax({
+			type : "POST",//方法类型
+			async : false,
+			dataType : "json",//预期服务器返回的数据类型
+			data:{
+				'currentPage':currentPage,
+				'rows':rowsex,
+  				'competitionname':document.getElementById("competitionname").value,
+  				'teamname':document.getElementById("teamname").value,
+  				'studentname':document.getElementById("studentname").value,
+  				'teachername':document.getElementById("teachername").value,
+  				'roleflag':document.getElementById("roleflag").value,
+    			'majorname':document.getElementById("majorname").value,
+    			'classname':document.getElementById("classname").value,
+    			'grade':document.getElementById("grade").value
+			},
+			url : "../FindTeamByPageServlet",//url
+			success : function(result) {
+				console.log(result.list);
+					$('#page_all_data').val(JSON.stringify(result.list));
+                    $("#download_all_form").submit();
+				return true;
+			},
+			error : function(data, XMLHttpRequest, textStatus,
+					errorThrown) {
+				alert('异常！');
+				return false;
+			}
+		});
+  });
+  
+    
+	//接收echars传递的loctaion参数，解析参数
+	function getQueryString(name) {
+	    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)", "i");
+	    var reg_rewrite = new RegExp("(^|/)" + name + "/([^/]*)(/|$)", "i");
+	    var r = window.location.search.substr(1).match(reg);
+	    var q = window.location.pathname.substr(1).match(reg_rewrite);
+	    if(r != null){
+	        return decodeURI(r[2]);
+	    }else if(q != null){
+	        return decodeURI(q[2]);
+	    }else{
+	        return null;
+	    }
+	} 
+	var urltype_grade = getQueryString('grade');
+	var urltype_classname = getQueryString('classname');
+	var urltype_majorname = getQueryString('majorname');
+	$.getJSON("../FindAllMajorServlet",{},function(data){
+	  	$.each(data,function(index,item){
+	  		$("#majorname").append($("<option>").val("请选择"));
+			$("#majorname").append($("<option>").val(item.majorname).text(item.majorname));
+		});
+		form.render(); 
+		var options_maj = $('#majorname option');
+		console.log(options_maj.length);
+		for (var i = 0; i < options_maj.length; i++) {
+			var opi = $(options_maj.get(i));
+			if (opi.text() == urltype_majorname) {
+				opi.attr("selected","selected");
+				break;
+			}
+		}
+	});
+	/* 表格渲染 */
+	$(document).ready(function(){
+		if(urltype_grade != null || urltype_classname != null || urltype_majorname != null){
+			//显示
+			$(".abc").show().addClass("show");
+			$(".but").click(function(e) {
+				location.href="../sta/echars.html"; 
+			})
+			
+		}else{
+			//隐藏
+			$(".abc").hide().removeClass("show");
+		}
+		//获取到了url参数 形参是传递name
+		console.log(urltype_grade);
+		$("#grade").val(urltype_grade);
+		$("#majorname option[value='" + urltype_majorname + "']").attr("selected","selected");
+		$("#classname").val(urltype_classname);
+		$.getJSON("../FindTeamByPageServlet",{
+			'currentPage':currentPage,
+			'rows':rows,
+			'grade':urltype_grade,
+			'classname':urltype_classname,
+			'majorname':urltype_majorname
+		},function(data){
+			table.render({
+        		//向后台传参
+        		where:{
+        			'currentPage':currentPage,
+        			'rows':rows,
+        			'grade':urltype_grade,
+        			'classname':urltype_classname,
+        			'majorname':urltype_majorname
+        		}
+        	  	,parseData:function(data){
+        	  		console.log(data);
+        	  		 return {
+        				  'code':0 ,// 对应 code
+        				  'msg' :"", // 对应 msg
+        				  'count' :data.totalCount, // 对应 count
+        				  'data':data.list  // 对应 data
+        				 }
+        	  	}
+        	    ,elem: '#test'
+        	    ,method:"get"
+        	    ,url:'../FindTeamByPageServlet'
+        	    ,cellMinWidth: 150 //全局定义常规单元格的最小宽度，layui 2.2.1 新增 
+        	    ,id:'idTest'
+        	    ,cols: [[ //表头
+        	    	{type:'numbers',title:'序号'}
+        	        ,{field: 'competitionname', title: '赛事名称',width:250}
+        	        ,{field: 'teamname', title: '队伍名称',width:250}
+        	        ,{field: 'studentname', title: '队员姓名',width:150}
+        	        ,{field: 'roleflag', title: '是否是队长',witdth:150}
+        	        ,{field: 'teachername', title: '指导老师',witdth:150}
+        	        ,{fixed: 'right', width:178, align:'center', toolbar: '#barDemo'}
+        	      ]]
+        	    ,page:false 
+        	  });
+			pages(data.totalCount);
+		});
+	});
+	
+	function pages(count){
+		laypage.render({
+			    elem: 'demo3'
+			    ,count: count
+			    ,first: '首页'
+			    ,last: '尾页'
+			    ,prev: '<em>←</em>' 
+			    ,next: '<em>→</em>'
+			    ,skin:true
+			    ,jump: function(obj, first){
+			         if(!first){
+			        	//加载层-默认风格
+			        	 layer.load(2);
+			        	 //此处演示关闭
+			        	 setTimeout(function(){
+			        	   layer.closeAll('loading');
+			        	 }, 100);
+			             table.reload("idTest",{
+			            	 where:{
+		            			'currentPage':obj.curr,
+		            			'rows':obj.limit
+		            		} 
+			             });
+			            }
+			        }
+			  });
+		
+	}
+
+	  /* 搜索按钮 */
+	 var active={
+	  		reload:function(){
+	  		var competitionname = document.getElementById("competitionname").value;
+	  		var teamname = document.getElementById("teamname").value;
+	  		var studentname = document.getElementById("studentname").value;
+	  		var teachername = document.getElementById("teachername").value;
+	  		var roleflag = document.getElementById("roleflag").value;
+	  		var majorname = document.getElementById("majorname").value;
+	  		var classname = document.getElementById("classname").value;
+	  		var grade = document.getElementById("grade").value;
+			  			 $.getJSON("../FindTeamByPageServlet",{
+		      				'currentPage':currentPage,
+		      				'rows':rows,
+		      				'competitionname':competitionname,
+		      				'teamname':teamname,
+		      				'studentname':studentname,
+		      				'teachername':teachername,
+		      				'roleflag':roleflag,
+    	        			'majorname':majorname,
+    	        			'classname':classname,
+    	        			'grade':grade
+		      			},function(data){
+		      				table.render({
+		      	        		//向后台传参
+		      	        		where:{
+				      				'currentPage':currentPage,
+				      				'rows':rows,
+				      				'competitionname':competitionname,
+				      				'teamname':teamname,
+				      				'studentname':studentname,
+				      				'teachername':teachername,
+				      				'roleflag':roleflag,
+		    	        			'majorname':majorname,
+		    	        			'classname':classname,
+		    	        			'grade':grade
+		      	        		}
+		      	        	  	,parseData:function(data){
+		      	        	  		console.log(data);
+		      	        	  		 return {
+		      	        				  'code':0 ,// 对应 code
+		      	        				  'msg' :"", // 对应 msg
+		      	        				  'count' :data.totalCount, // 对应 count
+		      	        				  'data':data.list  // 对应 data
+		      	        				 }
+		      	        	  	}
+		      	        	    ,elem: '#test'
+		      	        	    ,method:"get"
+		      	        	    ,url:'../FindTeamByPageServlet'
+		      	        	    ,cellMinWidth: 150 //全局定义常规单元格的最小宽度，layui 2.2.1 新增 
+		      	        	    ,id:'idTest'
+		      	        	    ,cols: [[ //表头
+		      	        	    	{type:'numbers',title:'序号'}
+		      	        	        ,{field: 'competitionname', title: '赛事名称',width:250}
+		      	        	        ,{field: 'teamname', title: '队伍名称',width:250}
+		      	        	        ,{field: 'studentname', title: '队员姓名',width:150}
+		      	        	        ,{field: 'roleflag', title: '是否是队长',witdth:150}
+		      	        	        ,{field: 'teachername', title: '指导老师',witdth:150}
+		      	        	        ,{fixed: 'right', width:178, align:'center', toolbar: '#barDemo'}
+		      	        	      ]]
+		      	        	    ,page:false 
+		      	        	  });
+		      				pages(data.totalCount);
+		      			}); 
+	  			
+	  		    }  
+	    };
+	  
+	  $('#search_btn').on('click', function(){
+		                  var type = 'reload';
+		                  active[type] ? active[type].call(this) : '';
+		                });  
+	
+	  //监听回车
+	  $("#competitionname,#teamname, #studentname, #teachername").bind("keyup", function (e) {
+	      if (e.keyCode == 13) {
+	          var type = "reload";
+	          active[type] ? active[type].call(this) : '';
+	      }
+	  });
+	  //清空
+	  $(document).on('click','#icon_close',function(){
+	  		document.getElementById("competitionname").value="";
+	  });
+	  $(document).on('click','#icon_close',function(){
+	  		document.getElementById("teamname").value="";
+	  });
+	  $(document).on('click','#icon_close',function(){
+	  		document.getElementById("studentname").value="";
+	  });
+	  $(document).on('click','#icon_close',function(){
+	  		document.getElementById("teachername").value="";
+	  });
+	  laydate.render({
+		    elem: '#grade2'
+		    ,type: 'year'
+		    ,done:function(value){
+		    	console.log(value);
+		    	if(value != ""){
+		    		$.getJSON("../FindAllMajorServlet",{},function(data){
+					  	$.each(data,function(index,item){
+					  		$("#majorname2").append($("<option>").val("请选择"));
+							$("#majorname2").append($("<option>").val(item.majorname).text(item.majorname));
+						});
+						form.render(); 
+				  });
+		    	}else{
+		    		  $("#majorname2").html("");
+					  $("#classname2").html("");
+					  form.render(); 
+		    	}
+		    }
+		  });
+		
+	$.getJSON("../FindAllCompetitionServlet",{},function(data){
+			$.each(data,function(index,item){
+				$("#competitionid2").append($("<option>").val(item.competitionid).text(item.competitionname));
+			});
+			form.render();
+	});
+
+	//过滤器名
+	form.on('select(majorname)',function(){
+	/* 	  var a = document.getElementById("majorname2"); //mySelect是select 的Id
+		  if($("#grade2").val() == ''){
+			  layer.msg('请先指定年级');
+			  a.options[0].selected = true;
+		  }   */
+		  $("#classname2").html("");
+		  $.getJSON("../FindClassesinfoByMajoridServlet",{
+		  		'majorname':$("#majorname2").val(),
+		  		'grade':$("#grade2").val()
+			},function(data){
+		  	$.each(data,function(index,item){
+				$("#classname2").append($("<option>").val("请选择"));
+				$("#classname2").append($("<option>").val(item.classname).text(item.classname));
+			});
+			form.render();  
+		  });
+	}); 
+	form.on('select(classname)',function(){
+		  var a = document.getElementById("majorname2"); //mySelect是select 的Id
+		  if($("#grade2").val() == ''){
+			  layer.msg('请先指定年级');
+			  a.options[0].selected = true;
+		  	  $("#majorname2").html("");
+		  }  
+	}); 
+	form.on('switch(roleflag)',function(data){
+		if(data.elem.checked == true){
+			this.value='是';
+			console.log(this.value);
+		}else{
+			this.value='否';
+			console.log(this.value);
+		}
+	}); 
+		 //监听工具条
+	  table.on('tool(demo)', function(obj){
+	    var data = obj.data;
+	    console.log(data.teamkey);
+	    if(obj.event === 'del'){
+	    	layer.confirm('真的删除该条信息么', function(index){
+	            $.getJSON("../RemoveTeamServlet",{
+	            	'teamkey':data.teamkey
+	            },function(data){
+	                if(data > 0){
+	            		$.getJSON("../FindTeamByPageServlet",{
+	            			'currentPage':currentPage,
+	            			'rows':rows
+	            		},function(data){
+	            			table.render({
+	                    		//向后台传参
+	                    		where:{
+	                    			'currentPage':currentPage,
+	                    			'rows':rows
+	                    		}
+	                    	  	,parseData:function(data){
+	                    	  		 return {
+	                    				  'code':0 ,// 对应 code
+	                    				  'msg' :"", // 对应 msg
+	                    				  'count' :data.totalCount, // 对应 count
+	                    				  'data':data.list  // 对应 data
+	                    				 }
+	                    	  	}
+	                    	    ,elem: '#test'
+	                    	    ,method:"get"
+	                    	    ,url:'../FindTeamByPageServlet'
+	                    	    ,cellMinWidth: 150 //全局定义常规单元格的最小宽度，layui 2.2.1 新增 
+	                    	    ,id:'idTest'
+	                    	    ,cols: [[ //表头
+	                    	    	{type:'numbers',title:'序号'}
+	                    	        ,{field: 'competitionname', title: '赛事名称',width:250}
+	                    	        ,{field: 'teamname', title: '队伍名称',width:250}
+	                    	        ,{field: 'studentname', title: '队员姓名',width:150}
+	                    	        ,{field: 'roleflag', title: '是否是队长',witdth:150}
+	                    	        ,{field: 'teachername', title: '指导老师',witdth:150}
+	                    	        ,{fixed: 'right', width:178, align:'center', toolbar: '#barDemo'}
+	                    	      ]]
+	                    	    ,page:false 
+	                    	  });
+	            			pages(data.totalCount);
+	            		});
+	                	layer.msg('删除成功！');
+	                }
+	            });
+	            layer.close(index);
+	    	});
+	    } else if(obj.event === 'edit'){
+	    		layer.open({
+	    			  type:1,
+	    			  title:"编辑",
+	    			  area:['50%','100%'],
+	    			  skin: 'layui-layer-molv',
+	    			  btn: ['确定', '取消'], 
+	    			  content: $("#window2"),
+	    			  success:function(layero,index){
+	    				  $("#majorname2").val(data.majorname).text(data.majorname);
+	    				  $("#classname2").val(data.classname).text(data.classname);
+	 	                  form.val('example',{
+	 	                	  'competitionid2':data.competitionid,
+	 	                	  'teamid':data.teamid,
+	 	                	  'teamname':data.teamname,
+	 	                	  'studentid':data.studentid,
+	 	                	  'studentname':data.studentname,
+	 	                	  'sex':data.sex,
+	 	                	  'mobile':data.mobile,
+	 	                	  'email':data.email,
+	 	                	  'roleflag':data.roleflag,
+	 	                	  'teachername':data.teachername,
+	 	                	  'departmentname':data.departmentname,
+	 	                	  /* 'majorname2':data.majorname, */
+	 	                	  'grade':data.grade
+	 	                	 /*  'classname2':data.classname, */
+	 	                	  /* 'userrealname':data.userrealname */
+	 	                  });
+	 	                 /*  console.log(data.majorname); */
+	 	                 /* form.render('select');  */
+	               	 },
+	               	 //表单处需要添加表单验证，提示：专业不能为空，班级不能为空，年级不能为空
+	    			  yes:function(index,layero){    
+	    				  $.getJSON("../GetUsersinfoSessionServlet",{},function(res){
+		    				  $.getJSON("../UpdateTeamServlet",{    						  
+	    						  "teamkey":data.teamkey,
+		 	                	  'competitionid':$("#competitionid2").val(),
+		 	                	  'teamid':$("#teamid").val(),
+		 	                	  'teamname':$("#teamname2").val(),
+		 	                	  'studentid':$("#studentid").val(),
+		 	                	  'studentname':$("#studentname2").val(),
+		 	                	  'sex':$("input[type=radio]:checked").val(),
+		 	                	  'mobile':$("#mobile").val(),
+		 	                	  'email':$("#email").val(),
+		 	                	  'roleflag': $("#roleflag2").val(),
+		 	                	  'teachername':$("#teachername2").val(),
+		 	                	  'departmentname':$("#departmentname").val(),
+		 	                	  'majorname':$("#majorname2").val(),
+		 	                	  'grade':$("#grade2").val(),
+		 	                	  'classname':$("#classname2").val(),
+		 	                	  'userrealname':res.realname
+	    				  },function(data){
+		    					  if(data>0){
+		    	          			  layer.alert('修改成功',{icon:1,title:'提示'},function(i){
+		    	          				  layer.close(i);
+		    	                            layer.close(index);//关闭弹出层
+				    	          			//window.parent.location.reload();
+		    	                            $("#the_form")[0].reset();//重置form
+		    	          			  })
+		    	          			   table.reload('idTest',{})
+		    	          		  }
+		    				  });
+	    				  });
+	    			  }
+	    		});
+	    }else if(obj.event === 'detail'){
+	    	layer.alert('队伍编号：' + data.teamid + '</br> 学号：' + data.studentid +'</br> 姓名：' + data.studentname + '</br> 性别：' + data.sex +
+	    			'</br> 联系电话：' + data.mobile + '</br> 邮箱：' + data.email + '</br> 院系：' + data.departmentname + 
+	    			'</br> 专业名称：' + data.majorname + '</br>班级名称：' + data.classname + '</br> 年级：' + data.grade , {icon: 6});
+	    }
+	    /* 监听结尾 */
+	  });
+	  
+	
+  $('.demoTable .layui-btn').on('click', function(){
+	    var type = $(this).data('type');
+	    active[type] ? active[type].call(this) : '';
+	  });
+	  
+	  
+	  
+/* layui.use结束 */	
+});
+
+</script>
+	
+	
+</body>
+</html>
